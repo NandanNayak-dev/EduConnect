@@ -1,7 +1,8 @@
 import express from 'express';
 import userAuthentication from '../middleware/userAuthentication.js';
+import uploadFile from '../middleware/uploadFile.js';
 import {
-    createClass, joinClass, getClasses,
+    createClass, joinClass, getClasses, getClassStudents,
     addMaterial, getMaterials,
     addAnnouncement, getAnnouncements,
     addPoll, getPolls, votePoll
@@ -16,9 +17,10 @@ router.use(userAuthentication);
 router.post('/classes', createClass);
 router.post('/classes/join', joinClass);
 router.get('/classes', getClasses);
+router.get('/classes/:classId/students', getClassStudents);
 
 // Materials
-router.post('/materials', addMaterial);
+router.post('/materials', uploadFile.single('materials'), addMaterial);
 router.get('/materials', getMaterials);
 
 // Announcements

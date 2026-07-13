@@ -67,14 +67,27 @@ export const getClasses = async (req, res) => {
     }
 };
 
+export const getClassStudents = async (req, res) => {
+    try {
+        const { classId } = req.params;
+        const targetClass = await ClassModel.findById(classId).populate('students', 'fullName email');
+        if (!targetClass) return res.status(404).json({ status: false, message: "Class not found" });
+        res.status(200).json({ status: true, students: targetClass.students });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
 // --- Materials ---
 export const addMaterial = async (req, res) => {
     try {
         if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can upload materials" });
         const { title, description, link, classId } = req.body;
         if (!title || !description || !classId) return res.status(400).json({ status: false, message: "Title, description, and classId are required" });
+        let fileUrl = "";
+        if (req.file) { fileUrl = `${req.file.filename}`; }
 
-        const material = new MaterialModel({ title, description, link, classId, teacherId: req.user._id });
+        const material = new MaterialModel({ title, description, link, fileUrl, classId, teacherId: req.user._id });
         await material.save();
         res.status(201).json({ status: true, message: "Material added successfully", material });
     } catch (error) {
@@ -97,10 +110,10 @@ export const getMaterials = async (req, res) => {
 export const addAnnouncement = async (req, res) => {
     try {
         if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can post announcements" });
-        const { title, content, classId } = req.body;
+        const { title, content, classId, urgent } = req.body;
         if (!title || !content || !classId) return res.status(400).json({ status: false, message: "Title, content, and classId are required" });
 
-        const announcement = new AnnouncementModel({ title, content, classId, teacherId: req.user._id });
+        const announcement = new AnnouncementModel({ title, content, urgent: !!urgent, classId, teacherId: req.user._id });
         await announcement.save();
         res.status(201).json({ status: true, message: "Announcement posted", announcement });
     } catch (error) {
