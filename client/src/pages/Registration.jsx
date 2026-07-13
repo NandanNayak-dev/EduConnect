@@ -1,7 +1,7 @@
 import { Box, Typography, TextField, Button, Divider, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
@@ -33,6 +33,7 @@ const Registration = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -59,8 +60,8 @@ const Registration = () => {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
         });
-        if (response.data.user.role === "user") {
-          navigate("/profile");
+        if (response.data.user.role === "student" || response.data.user.role === "teacher") {
+          navigate("/materials");
         } else if (response.data.user.role === "admin") {
           navigate("/dashboard");
         } else {
@@ -89,8 +90,8 @@ const Registration = () => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
-      if (role === "user") {
-        navigate("/profile");
+      if (role === "student" || role === "teacher") {
+        navigate("/materials");
       } else if (role === "admin") {
         navigate("/dashboard");
       }
@@ -240,22 +241,28 @@ const Registration = () => {
               )}
               <FormControl fullWidth sx={{ mb: 1 }}>
                 <InputLabel sx={{ color: "text.primary" }}>Role</InputLabel>
-                <Select
-                  label="Role"
-                  {...register("role")}
-                  sx={{
-                    color: "text.primary",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "divider",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "divider",
-                    },
-                  }}
-                >
-                  <MenuItem value="student">I am a Student</MenuItem>
-                  <MenuItem value="teacher">I am a Teacher</MenuItem>
-                </Select>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Role"
+                      sx={{
+                        color: "text.primary",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "divider",
+                        },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "divider",
+                        },
+                      }}
+                    >
+                      <MenuItem value="student">I am a Student</MenuItem>
+                      <MenuItem value="teacher">I am a Teacher</MenuItem>
+                    </Select>
+                  )}
+                />
               </FormControl>
               <Button
                 type="submit"
