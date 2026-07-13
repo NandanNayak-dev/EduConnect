@@ -57,8 +57,8 @@ const Login = () => {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
         });
-        if (response.data.user.role === "user") {
-          navigate("/profile");
+        if (response.data.user.role === "student" || response.data.user.role === "teacher") {
+          navigate("/classes");
         } else if (response.data.user.role === "admin") {
           navigate("/dashboard");
         } else {
@@ -88,8 +88,8 @@ const Login = () => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
-      if (role === "user") {
-        navigate("/profile");
+      if (role === "student" || role === "teacher") {
+        navigate("/classes");
       } else if (role === "admin") {
         navigate("/dashboard");
       }

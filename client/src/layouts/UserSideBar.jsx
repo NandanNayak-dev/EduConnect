@@ -13,9 +13,7 @@ import PropTypes from "prop-types";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import CampaignIcon from '@mui/icons-material/Campaign';
-import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import ClassIcon from '@mui/icons-material/Class';
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -41,19 +39,9 @@ const UserSideBar = ({ children }) => {
       icon: <DashboardIcon />,
     },
     {
-      label: "Materials",
-      url: "/materials",
-      icon: <MenuBookIcon />,
-    },
-    {
-      label: "Announcements",
-      url: "/announcements",
-      icon: <CampaignIcon />,
-    },
-    {
-      label: "Polls",
-      url: "/polls",
-      icon: <HowToVoteIcon />,
+      label: "My Classes",
+      url: "/classes",
+      icon: <ClassIcon />,
     },
     {
       label: "Task Manager",

@@ -3,9 +3,8 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 import Profile from "../pages/Profile";
-import Materials from "../pages/Materials";
-import Announcements from "../pages/Announcements";
-import Polls from "../pages/Polls";
+import Classes from "../pages/Classes";
+import ClassDetails from "../pages/ClassDetails";
 import UserSideBar from "../layouts/UserSideBar";
 import TaskManager from "../pages/TaskManager";
 import { DndProvider } from "react-dnd";
@@ -41,26 +40,18 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/materials",
+    path: "/classes",
     element: (
       <UserSideBar>
-        <Materials />
+        <Classes />
       </UserSideBar>
     ),
   },
   {
-    path: "/announcements",
+    path: "/classes/:classId",
     element: (
       <UserSideBar>
-        <Announcements />
-      </UserSideBar>
-    ),
-  },
-  {
-    path: "/polls",
-    element: (
-      <UserSideBar>
-        <Polls />
+        <ClassDetails />
       </UserSideBar>
     ),
   },

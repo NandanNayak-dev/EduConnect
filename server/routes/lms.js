@@ -1,6 +1,7 @@
 import express from 'express';
 import userAuthentication from '../middleware/userAuthentication.js';
 import {
+    createClass, joinClass, getClasses,
     addMaterial, getMaterials,
     addAnnouncement, getAnnouncements,
     addPoll, getPolls, votePoll
@@ -10,6 +11,11 @@ const router = express.Router();
 
 // All LMS routes require authentication
 router.use(userAuthentication);
+
+// Classes
+router.post('/classes', createClass);
+router.post('/classes/join', joinClass);
+router.get('/classes', getClasses);
 
 // Materials
 router.post('/materials', addMaterial);

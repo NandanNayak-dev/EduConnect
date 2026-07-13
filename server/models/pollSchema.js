@@ -8,6 +8,7 @@ const pollSchema = new mongoose.Schema({
     }],
     votedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     createdAt: { type: Date, default: Date.now },
 });
 

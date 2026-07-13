@@ -61,7 +61,7 @@ const Registration = () => {
           path: "",
         });
         if (response.data.user.role === "student" || response.data.user.role === "teacher") {
-          navigate("/materials");
+          navigate("/classes");
         } else if (response.data.user.role === "admin") {
           navigate("/dashboard");
         } else {
@@ -91,7 +91,7 @@ const Registration = () => {
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
       if (role === "student" || role === "teacher") {
-        navigate("/materials");
+        navigate("/classes");
       } else if (role === "admin") {
         navigate("/dashboard");
       }

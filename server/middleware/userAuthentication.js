@@ -13,7 +13,9 @@ const userAuthentication = async (req, res, next) => {
                 if (Types.ObjectId.isValid(userId)) {
 
                     const user = await UserModel.findById(userId).select("-password");
-                    if (user.role === "user") {
+                    if (!user) return res.status(404).json({ "status": false, "message": "User not found" });
+
+                    if (user.role === "student" || user.role === "teacher" || user.role === "admin") {
                         req.user = user
                         next();
                     } else {
