@@ -51,11 +51,11 @@ const Login = () => {
       if (response.data.status) {
         Cookies.set(import.meta.env.VITE_TOKEN_KEY, response.data.token, {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
-          path: "",
+          path: "/",
         });
         Cookies.set(import.meta.env.VITE_USER_ROLE, response.data.user.role, {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
-          path: "",
+          path: "/",
         });
         if (response.data.user.role === "student" || response.data.user.role === "teacher") {
           navigate("/classes");

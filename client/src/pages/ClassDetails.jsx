@@ -30,6 +30,7 @@ const ClassDetails = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [polls, setPolls] = useState([]);
   const [students, setStudents] = useState([]);
+  const [videos, setVideos] = useState([]);
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -47,16 +48,18 @@ const ClassDetails = () => {
   const fetchClassData = async () => {
     try {
       const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
-      const [matRes, annRes, pollRes, studentRes] = await Promise.all([
+      const [matRes, annRes, pollRes, studentRes, videoRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/materials?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/announcements?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/polls?classId=${classId}`, { headers }),
-        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/classes/${classId}/students`, { headers })
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/classes/${classId}/students`, { headers }),
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/videos?classId=${classId}`, { headers })
       ]);
       setMaterials(matRes.data.materials || []);
       setAnnouncements(annRes.data.announcements || []);
       setPolls(pollRes.data.polls || []);
       setStudents(studentRes.data.students || []);
+      setVideos(videoRes.data.videos || []);
     } catch (error) {
       console.error("Error fetching class data", error);
     }
@@ -111,6 +114,25 @@ const ClassDetails = () => {
     } catch (error) { alert("Error or already voted."); }
   };
 
+  const handlePostVideo = async () => {
+    if (!newTitle || !newDesc || !newFile) return alert("Please fill all fields and select a video.");
+    try {
+      const formData = new FormData();
+      formData.append('title', newTitle);
+      formData.append('description', newDesc);
+      formData.append('classId', classId);
+      formData.append('videos', newFile);
+      await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/videos`, formData, {
+        headers: { 
+          Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setNewTitle(''); setNewDesc(''); setNewFile(null);
+      fetchClassData();
+    } catch (error) { alert("Error posting video."); }
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -118,6 +140,7 @@ const ClassDetails = () => {
           <Tab label="Materials" />
           <Tab label="Announcements" />
           <Tab label="Polls" />
+          <Tab label="Videos" />
           {role === 'teacher' && <Tab label="Students" />}
         </Tabs>
       </Box>
@@ -148,7 +171,7 @@ const ClassDetails = () => {
             {m.link && <Box><a href={m.link} target="_blank" rel="noreferrer">View Link</a></Box>}
             {m.fileUrl && (
               <Box sx={{ mt: 1 }}>
-                <Button variant="outlined" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/${m.fileUrl}`} target="_blank">
+                <Button variant="outlined" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/materials/${m.fileUrl}`} target="_blank">
                   Download PDF
                 </Button>
               </Box>
@@ -267,9 +290,41 @@ const ClassDetails = () => {
         })}
       </TabPanel>
 
+      {/* VIDEOS */}
+      <TabPanel value={tabValue} index={3}>
+        {role === 'teacher' && (
+          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+            <Typography variant="h6">Upload Video Class</Typography>
+            <TextField fullWidth label="Video Title" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
+            <TextField fullWidth label="Video Description" margin="normal" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
+            <Box sx={{ mt: 2, mb: 1 }}>
+              <Button variant="outlined" component="label">
+                Select Video File
+                <input type="file" hidden accept="video/mp4,video/x-m4v,video/*" onChange={e => setNewFile(e.target.files[0])} />
+              </Button>
+              {newFile && <Typography variant="body2" sx={{ display: 'inline', ml: 2 }}>{newFile.name}</Typography>}
+            </Box>
+            <Button variant="contained" sx={{ mt: 1 }} onClick={handlePostVideo}>Upload Video</Button>
+          </Box>
+        )}
+        {videos.map(v => (
+          <Box key={v._id} sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            <Typography variant="h6">{v.title}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>By {v.teacherId?.fullName}</Typography>
+            <Typography sx={{ mb: 2 }}>{v.description}</Typography>
+            <Box sx={{ width: '100%', maxWidth: '800px', margin: '0 auto', borderRadius: 2, overflow: 'hidden' }}>
+              <video controls style={{ width: '100%' }}>
+                <source src={`${import.meta.env.VITE_SERVER_ENDPOINT}/videos/${v.fileUrl}`} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </Box>
+          </Box>
+        ))}
+      </TabPanel>
+
       {/* STUDENTS TAB */}
       {role === 'teacher' && (
-        <TabPanel value={tabValue} index={3}>
+        <TabPanel value={tabValue} index={4}>
           <Typography variant="h5" sx={{ mb: 2 }}>Enrolled Students ({students.length})</Typography>
           {students.length === 0 ? (
             <Typography>No students have joined this class yet.</Typography>

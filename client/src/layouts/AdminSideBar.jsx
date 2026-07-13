@@ -43,8 +43,8 @@ const AdminSideBar = () => {
     setAlertBoxOpenStatus(true);
     setAlertSeverity("success");
     setAlertMessage("Logged Out Successfully");
-    Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-    Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
+    Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "/" });
+    Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "/" });
     navigate("/login");
   };
 
@@ -60,8 +60,8 @@ const AdminSideBar = () => {
         navigate("/dashboard");
       }
     } else {
-      Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-      Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
+      Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "/" });
+      Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "/" });
       navigate("/login");
     }
   }, []);

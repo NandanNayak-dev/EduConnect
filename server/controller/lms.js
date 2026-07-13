@@ -2,6 +2,7 @@ import MaterialModel from '../models/materialSchema.js';
 import AnnouncementModel from '../models/announcementSchema.js';
 import PollModel from '../models/pollSchema.js';
 import ClassModel from '../models/classSchema.js';
+import VideoModel from '../models/videoSchema.js';
 
 // --- Classes ---
 export const createClass = async (req, res) => {
@@ -175,6 +176,35 @@ export const votePoll = async (req, res) => {
         await poll.save();
 
         res.status(200).json({ status: true, message: "Vote cast successfully", poll });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+// --- Videos ---
+export const addVideo = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can upload videos" });
+        const { title, description, classId } = req.body;
+        if (!title || !description || !classId) return res.status(400).json({ status: false, message: "Title, description, and classId are required" });
+        if (!req.file) return res.status(400).json({ status: false, message: "Video file is required" });
+
+        const fileUrl = `${req.file.filename}`;
+        const video = new VideoModel({ title, description, fileUrl, classId, teacherId: req.user._id });
+        await video.save();
+        res.status(201).json({ status: true, message: "Video uploaded successfully", video });
+    } catch (error) {
+        console.error('Error uploading video:', error);
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const getVideos = async (req, res) => {
+    try {
+        const { classId } = req.query;
+        if (!classId) return res.status(400).json({ status: false, message: "classId query parameter is required" });
+        const videos = await VideoModel.find({ classId }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
+        res.status(200).json({ status: true, videos });
     } catch (error) {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }

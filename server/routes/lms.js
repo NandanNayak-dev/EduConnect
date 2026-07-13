@@ -5,7 +5,8 @@ import {
     createClass, joinClass, getClasses, getClassStudents,
     addMaterial, getMaterials,
     addAnnouncement, getAnnouncements,
-    addPoll, getPolls, votePoll
+    addPoll, getPolls, votePoll,
+    addVideo, getVideos
 } from '../controller/lms.js';
 
 const router = express.Router();
@@ -31,5 +32,9 @@ router.get('/announcements', getAnnouncements);
 router.post('/polls', addPoll);
 router.get('/polls', getPolls);
 router.patch('/polls/vote', votePoll);
+
+// Videos
+router.post('/videos', uploadFile.single('videos'), addVideo);
+router.get('/videos', getVideos);
 
 export default router;
