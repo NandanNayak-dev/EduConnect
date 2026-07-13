@@ -3,22 +3,20 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 import Profile from "../pages/Profile";
-import MyPost from "../pages/MyPost";
-import AddPost from "../pages/AddPost";
+import Materials from "../pages/Materials";
+import Announcements from "../pages/Announcements";
+import Polls from "../pages/Polls";
 import UserSideBar from "../layouts/UserSideBar";
 import TaskManager from "../pages/TaskManager";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import AddProduct from "../pages/AddProduct";
+
 import AdminSideBar from "../layouts/AdminSideBar";
 import NotFound from "../pages/NotFound";
 import Setting from "../pages/Setting";
 import Users from "../pages/dashboard/Users";
 import Dashboard from "../pages/dashboard/Dashboard";
-import Post from "../pages/Post";
-import MyProduct from "../pages/MyProduct";
 import PublicRoute from "../layouts/PublicRoute";
-import Product from "../pages/Product";
 import Subscription from "../pages/Subscription";
 
 const router = createBrowserRouter([
@@ -43,18 +41,26 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/my-post",
+    path: "/materials",
     element: (
       <UserSideBar>
-        <MyPost />
+        <Materials />
       </UserSideBar>
     ),
   },
   {
-    path: "/add-post",
+    path: "/announcements",
     element: (
       <UserSideBar>
-        <AddPost />
+        <Announcements />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/polls",
+    element: (
+      <UserSideBar>
+        <Polls />
       </UserSideBar>
     ),
   },
@@ -70,22 +76,7 @@ const router = createBrowserRouter([
       </>
     ),
   },
-  {
-    path: "/add-product",
-    element: (
-      <UserSideBar>
-        <AddProduct />
-      </UserSideBar>
-    ),
-  },
-  {
-    path: "/my-product",
-    element: (
-      <UserSideBar>
-        <MyProduct />
-      </UserSideBar>
-    ),
-  },
+
   {
     path: "/setting",
     element: (
@@ -95,23 +86,8 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/posts/:postId",
-    element: (
-      <PublicRoute>
-        <Post />
-      </PublicRoute>
-    ),
-  },
-  {
-    path: "/products/:productId",
-    element: (
-      <PublicRoute>
-        <Product />
-      </PublicRoute>
-    ),
-  },{
-path:"/subscription",
-element: <PublicRoute><Subscription /></PublicRoute>
+    path: "/subscription",
+    element: <PublicRoute><Subscription /></PublicRoute>
   },{
     path: "/dashboard",
     element: <AdminSideBar />,

@@ -12,10 +12,10 @@ import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -25,7 +25,7 @@ import Cookies from "js-cookie";
 import useEduConnect from "../hooks/useEduConnect";
 import AlertBox from "../../components/common/AlertBox";
 import { useEffect } from "react";
-import SellIcon from '@mui/icons-material/Sell';
+
 
 const UserSideBar = ({ children }) => {
   const navigate = useNavigate();
@@ -41,24 +41,19 @@ const UserSideBar = ({ children }) => {
       icon: <DashboardIcon />,
     },
     {
-      label: "My Post",
-      url: "/my-post",
-      icon: <ListAltIcon />,
+      label: "Materials",
+      url: "/materials",
+      icon: <MenuBookIcon />,
     },
     {
-      label: "Add Post",
-      url: "/add-post",
-      icon: <AddBoxIcon />,
+      label: "Announcements",
+      url: "/announcements",
+      icon: <CampaignIcon />,
     },
     {
-      label: "Add Product",
-      url: "/add-product",
-      icon: <AddShoppingCartIcon />,
-    },
-    {
-      label: "My Product",
-      url: "/my-product",
-      icon: <SellIcon />,
+      label: "Polls",
+      url: "/polls",
+      icon: <HowToVoteIcon />,
     },
     {
       label: "Task Manager",
@@ -85,8 +80,8 @@ const UserSideBar = ({ children }) => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
-      if (role === "user") {
-        navigate("/profile");
+      if (role === "student" || role === "teacher") {
+        // Allow them to stay in the UserSideBar Layout
       } else if (role === "admin") {
         navigate("/dashboard");
       }

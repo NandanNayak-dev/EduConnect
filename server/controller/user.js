@@ -18,7 +18,12 @@ const registration = [
                 return res.status(400).json({ status: false, message: errors.array()[0].msg });
             }
 
-            const { fullName, email, password } = req.body;
+            const { fullName, email, password, role } = req.body;
+            
+            if (!role || (role !== "student" && role !== "teacher")) {
+                return res.status(400).json({ status: false, message: "Role must be either 'student' or 'teacher'" });
+            }
+
             const existingUser = await UserModel.findOne({ email });
             if (existingUser) {
                 return res.status(400).json({ status: false, message: "User already exists" });
@@ -33,7 +38,7 @@ const registration = [
                 email,
                 password: hashPassword,
                 createdAt: new Date(),
-                role: "user"
+                role: role
             });
             const savedUser = await userData.save();
             if (savedUser) {

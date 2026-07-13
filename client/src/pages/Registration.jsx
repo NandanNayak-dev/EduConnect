@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, Button, Divider } from "@mui/material";
+import { Box, Typography, TextField, Button, Divider, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ const schema = yup.object().shape({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
+  role: yup.string().oneOf(["student", "teacher"]).required("Role is required"),
 });
 
 const Registration = () => {
@@ -38,6 +39,7 @@ const Registration = () => {
       fullName: "",
       email: "",
       password: "",
+      role: "student",
     },
     resolver: yupResolver(schema),
   });
@@ -232,10 +234,29 @@ const Registration = () => {
                 {...register("password", { required: true })}
               />
               {errors.password && (
-                <Typography variant="p" component="p" sx={{ color: "red" }}>
+                <Typography variant="p" component="p" sx={{ color: "red", mb: 2 }}>
                   {errors.password.message}
                 </Typography>
               )}
+              <FormControl fullWidth sx={{ mb: 1 }}>
+                <InputLabel sx={{ color: "text.primary" }}>Role</InputLabel>
+                <Select
+                  label="Role"
+                  {...register("role")}
+                  sx={{
+                    color: "text.primary",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "divider",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "divider",
+                    },
+                  }}
+                >
+                  <MenuItem value="student">I am a Student</MenuItem>
+                  <MenuItem value="teacher">I am a Teacher</MenuItem>
+                </Select>
+              </FormControl>
               <Button
                 type="submit"
                 variant="contained"
