@@ -6,6 +6,7 @@ import UserModel from "../models/userSchema.js"
 import PostModel from '../models/postSchema.js';
 import ProductModel from '../models/productSchema.js';
 import TaskModel from '../models/taskSchema.js';
+import SubmissionModel from '../models/submissionSchema.js';
 
 const registration = [
     check('fullName').matches(/^[a-zA-Z ]+$/).withMessage('Only alphabets and at least one space are allowed'),
@@ -242,6 +243,7 @@ const getUserActivity = async (req, res) => {
       commentsAgg,
       reactionsAgg,
       userDoc,
+      submissions,
     ] = await Promise.all([
       PostModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
       ProductModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
@@ -307,6 +309,10 @@ const getUserActivity = async (req, res) => {
         },
       ]),
       UserModel.findById(userId),
+      SubmissionModel.find({ 
+        studentId: userId, 
+        submittedAt: { $gte: startDate, $lte: today }
+      }, "submittedAt"),
     ]);
 
     // Count entries by their respective creation or update dates
@@ -321,6 +327,7 @@ const getUserActivity = async (req, res) => {
     countByDate(products);
     countByDate(tasksCreated);
     countByDate(updatedTasks, "updatedAt");
+    countByDate(submissions, "submittedAt");
 
     commentsAgg.forEach(({ _id, count }) => {
       if (activityMap[_id] !== undefined) activityMap[_id] += count;

@@ -61,6 +61,14 @@ const ProfileCardDetails = ({ data }) => {
             >
               {data?.email || 'Loading...'}
             </Typography>
+            {data?.role && (
+              <Box sx={{ mt: 2, display: 'inline-block', backgroundColor: 'rgba(255,255,255,0.2)', px: 2, py: 0.5, borderRadius: 2 }}>
+                <Typography variant="subtitle2" sx={{ textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '1px' }}>
+                  {data.role}
+                  {data.role === 'student' && data.usn ? ` - ${data.usn}` : ''}
+                </Typography>
+              </Box>
+            )}
           </Box>
           <Avatar
             sx={{ 
