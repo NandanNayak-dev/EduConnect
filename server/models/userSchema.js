@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  usn: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now

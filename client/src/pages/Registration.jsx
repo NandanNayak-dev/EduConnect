@@ -22,6 +22,11 @@ const schema = yup.object().shape({
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
   role: yup.string().oneOf(["student", "teacher"]).required("Role is required"),
+  usn: yup.string().when('role', {
+    is: 'student',
+    then: (schema) => schema.required('USN is required for students'),
+    otherwise: (schema) => schema.notRequired(),
+  })
 });
 
 const Registration = () => {
@@ -34,6 +39,7 @@ const Registration = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -41,6 +47,7 @@ const Registration = () => {
       email: "",
       password: "",
       role: "student",
+      usn: "",
     },
     resolver: yupResolver(schema),
   });
@@ -264,6 +271,37 @@ const Registration = () => {
                   )}
                 />
               </FormControl>
+              {watch("role") === "student" && (
+                <>
+                  <TextField
+                    fullWidth
+                    placeholder="Enter USN"
+                    sx={{
+                      mb: 1,
+                      color: "text.primary",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "divider",
+                        },
+                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "divider",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        "&::placeholder": {
+                          color: "text.primary",
+                        },
+                      },
+                    }}
+                    {...register("usn")}
+                  />
+                  {errors.usn && (
+                    <Typography variant="p" component="p" sx={{ color: "red", mb: 2 }}>
+                      {errors.usn.message}
+                    </Typography>
+                  )}
+                </>
+              )}
               <Button
                 type="submit"
                 variant="contained"

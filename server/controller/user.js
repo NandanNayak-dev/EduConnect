@@ -18,10 +18,13 @@ const registration = [
                 return res.status(400).json({ status: false, message: errors.array()[0].msg });
             }
 
-            const { fullName, email, password, role } = req.body;
+            const { fullName, email, password, role, usn } = req.body;
             
             if (!role || (role !== "student" && role !== "teacher")) {
                 return res.status(400).json({ status: false, message: "Role must be either 'student' or 'teacher'" });
+            }
+            if (role === 'student' && !usn) {
+                return res.status(400).json({ status: false, message: "USN is required for students" });
             }
 
             const existingUser = await UserModel.findOne({ email });
@@ -38,7 +41,8 @@ const registration = [
                 email,
                 password: hashPassword,
                 createdAt: new Date(),
-                role: role
+                role: role,
+                usn: role === 'student' ? usn : undefined
             });
             const savedUser = await userData.save();
             if (savedUser) {

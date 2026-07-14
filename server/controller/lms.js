@@ -3,6 +3,8 @@ import AnnouncementModel from '../models/announcementSchema.js';
 import PollModel from '../models/pollSchema.js';
 import ClassModel from '../models/classSchema.js';
 import VideoModel from '../models/videoSchema.js';
+import AssignmentModel from '../models/assignmentSchema.js';
+import SubmissionModel from '../models/submissionSchema.js';
 
 // --- Classes ---
 export const createClass = async (req, res) => {
@@ -107,6 +109,16 @@ export const getMaterials = async (req, res) => {
     }
 };
 
+export const deleteMaterial = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can delete materials" });
+        await MaterialModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ status: true, message: "Material deleted" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
 // --- Announcements ---
 export const addAnnouncement = async (req, res) => {
     try {
@@ -128,6 +140,16 @@ export const getAnnouncements = async (req, res) => {
         if (!classId) return res.status(400).json({ status: false, message: "classId query parameter is required" });
         const announcements = await AnnouncementModel.find({ classId }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
         res.status(200).json({ status: true, announcements });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const deleteAnnouncement = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can delete announcements" });
+        await AnnouncementModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ status: true, message: "Announcement deleted" });
     } catch (error) {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }
@@ -181,6 +203,16 @@ export const votePoll = async (req, res) => {
     }
 };
 
+export const deletePoll = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can delete polls" });
+        await PollModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ status: true, message: "Poll deleted" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
 // --- Videos ---
 export const addVideo = async (req, res) => {
     try {
@@ -205,6 +237,74 @@ export const getVideos = async (req, res) => {
         if (!classId) return res.status(400).json({ status: false, message: "classId query parameter is required" });
         const videos = await VideoModel.find({ classId }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
         res.status(200).json({ status: true, videos });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const deleteVideo = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can delete videos" });
+        await VideoModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ status: true, message: "Video deleted" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+// --- Assignments ---
+export const addAssignment = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can post assignments" });
+        const { title, description, classId } = req.body;
+        if (!title || !description || !classId) return res.status(400).json({ status: false, message: "Missing required fields" });
+
+        let fileUrl = null;
+        if (req.file) fileUrl = `${req.file.filename}`;
+
+        const assignment = new AssignmentModel({ title, description, fileUrl, classId, teacherId: req.user._id });
+        await assignment.save();
+        res.status(201).json({ status: true, message: "Assignment created", assignment });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const getAssignments = async (req, res) => {
+    try {
+        const { classId } = req.query;
+        if (!classId) return res.status(400).json({ status: false, message: "classId is required" });
+        const assignments = await AssignmentModel.find({ classId }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
+        res.status(200).json({ status: true, assignments });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+// --- Submissions ---
+export const submitAssignment = async (req, res) => {
+    try {
+        if (req.user.role !== 'student') return res.status(403).json({ status: false, message: "Only students can submit assignments" });
+        const { assignmentId } = req.body;
+        if (!assignmentId) return res.status(400).json({ status: false, message: "assignmentId is required" });
+        if (!req.file) return res.status(400).json({ status: false, message: "Submission file is required" });
+
+        const fileUrl = `${req.file.filename}`;
+        const submission = new SubmissionModel({ assignmentId, studentId: req.user._id, fileUrl });
+        await submission.save();
+        res.status(201).json({ status: true, message: "Assignment submitted", submission });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const getSubmissions = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can view submissions" });
+        const { assignmentId } = req.query;
+        if (!assignmentId) return res.status(400).json({ status: false, message: "assignmentId is required" });
+        const submissions = await SubmissionModel.find({ assignmentId }).populate('studentId', 'fullName email usn').sort({ submittedAt: -1 });
+        res.status(200).json({ status: true, submissions });
     } catch (error) {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }

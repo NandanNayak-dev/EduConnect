@@ -31,6 +31,9 @@ const ClassDetails = () => {
   const [polls, setPolls] = useState([]);
   const [students, setStudents] = useState([]);
   const [videos, setVideos] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [submissionsData, setSubmissionsData] = useState({}); // { assignmentId: [submissions] }
+  const [expandedAssignment, setExpandedAssignment] = useState(null);
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -48,18 +51,20 @@ const ClassDetails = () => {
   const fetchClassData = async () => {
     try {
       const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
-      const [matRes, annRes, pollRes, studentRes, videoRes] = await Promise.all([
+      const [matRes, annRes, pollRes, studentRes, videoRes, assignRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/materials?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/announcements?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/polls?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/classes/${classId}/students`, { headers }),
-        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/videos?classId=${classId}`, { headers })
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/videos?classId=${classId}`, { headers }),
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments?classId=${classId}`, { headers })
       ]);
       setMaterials(matRes.data.materials || []);
       setAnnouncements(annRes.data.announcements || []);
       setPolls(pollRes.data.polls || []);
       setStudents(studentRes.data.students || []);
       setVideos(videoRes.data.videos || []);
+      setAssignments(assignRes.data.assignments || []);
     } catch (error) {
       console.error("Error fetching class data", error);
     }
@@ -133,6 +138,65 @@ const ClassDetails = () => {
     } catch (error) { alert("Error posting video."); }
   };
 
+  const handlePostAssignment = async () => {
+    if (!newTitle || !newDesc) return alert("Title and Description required.");
+    try {
+      const formData = new FormData();
+      formData.append('title', newTitle);
+      formData.append('description', newDesc);
+      formData.append('classId', classId);
+      if (newFile) formData.append('assignments', newFile);
+
+      await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments`, formData, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setNewTitle(''); setNewDesc(''); setNewFile(null);
+      fetchClassData();
+    } catch (error) { alert("Error posting assignment."); }
+  };
+
+  const handleUploadSubmission = async (assignmentId, file) => {
+    if (!file) return alert("Please select a file.");
+    try {
+      const formData = new FormData();
+      formData.append('assignmentId', assignmentId);
+      formData.append('submissions', file);
+      await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submit`, formData, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      alert("Assignment submitted successfully!");
+      fetchClassData();
+    } catch (error) { alert("Error submitting assignment."); }
+  };
+
+  const fetchSubmissions = async (assignmentId) => {
+    if (expandedAssignment === assignmentId) {
+      setExpandedAssignment(null);
+      return;
+    }
+    try {
+      const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submissions?assignmentId=${assignmentId}`, { headers });
+      setSubmissionsData(prev => ({ ...prev, [assignmentId]: res.data.submissions }));
+      setExpandedAssignment(assignmentId);
+    } catch (error) { alert("Error fetching submissions."); }
+  };
+
+  const handleDeleteItem = async (type, id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    try {
+      const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
+      await axios.delete(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/${type}/${id}`, { headers });
+      fetchClassData();
+    } catch (error) { alert(`Error deleting ${type}.`); }
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -142,6 +206,7 @@ const ClassDetails = () => {
           <Tab label="Polls" />
           <Tab label="Videos" />
           {role === 'teacher' && <Tab label="Students" />}
+          <Tab label="Assignments" />
         </Tabs>
       </Box>
 
@@ -176,6 +241,11 @@ const ClassDetails = () => {
                 </Button>
               </Box>
             )}
+            {role === 'teacher' && (
+              <Button variant="text" color="error" onClick={() => handleDeleteItem('materials', m._id)} sx={{ mt: 1, p: 0 }}>
+                Delete Material
+              </Button>
+            )}
           </Box>
         ))}
       </TabPanel>
@@ -203,6 +273,11 @@ const ClassDetails = () => {
             </Typography>
             <Typography variant="body2" color="text.secondary">By {a.teacherId?.fullName}</Typography>
             <Typography sx={{ mt: 1 }}>{a.content}</Typography>
+            {role === 'teacher' && (
+              <Button variant="text" color="error" onClick={() => handleDeleteItem('announcements', a._id)} sx={{ mt: 1, p: 0 }}>
+                Delete Announcement
+              </Button>
+            )}
           </Box>
         ))}
       </TabPanel>
@@ -285,6 +360,11 @@ const ClassDetails = () => {
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'right' }}>
                 {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} total
               </Typography>
+              {role === 'teacher' && (
+                <Button variant="text" color="error" onClick={() => handleDeleteItem('polls', p._id)} sx={{ mt: 1, p: 0 }}>
+                  Delete Poll
+                </Button>
+              )}
             </Box>
           );
         })}
@@ -318,6 +398,11 @@ const ClassDetails = () => {
                 Your browser does not support the video tag.
               </video>
             </Box>
+            {role === 'teacher' && (
+              <Button variant="text" color="error" onClick={() => handleDeleteItem('videos', v._id)} sx={{ mt: 2, p: 0 }}>
+                Delete Video
+              </Button>
+            )}
           </Box>
         ))}
       </TabPanel>
@@ -339,6 +424,75 @@ const ClassDetails = () => {
           )}
         </TabPanel>
       )}
+
+      {/* ASSIGNMENTS TAB */}
+      <TabPanel value={tabValue} index={role === 'teacher' ? 5 : 4}>
+        {role === 'teacher' && (
+          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+            <Typography variant="h6">Post New Assignment</Typography>
+            <TextField fullWidth label="Title" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
+            <TextField fullWidth label="Description" margin="normal" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
+            <Box sx={{ mt: 2, mb: 1 }}>
+              <Button variant="outlined" component="label">
+                Attach File (Optional)
+                <input type="file" hidden onChange={e => setNewFile(e.target.files[0])} />
+              </Button>
+              {newFile && <Typography variant="body2" sx={{ display: 'inline', ml: 2 }}>{newFile.name}</Typography>}
+            </Box>
+            <Button variant="contained" sx={{ mt: 1 }} onClick={handlePostAssignment}>Post Assignment</Button>
+          </Box>
+        )}
+
+        {assignments.map(a => (
+          <Box key={a._id} sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
+            <Typography variant="h6">{a.title}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>By {a.teacherId?.fullName}</Typography>
+            <Typography sx={{ mb: 2 }}>{a.description}</Typography>
+            {a.fileUrl && (
+              <Button variant="outlined" size="small" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/assignments/${a.fileUrl}`} target="_blank" sx={{ mb: 2 }}>
+                Download Attachment
+              </Button>
+            )}
+            
+            {role === 'teacher' ? (
+              <Box sx={{ mt: 2, borderTop: '1px solid #eee', pt: 2 }}>
+                <Button variant="text" onClick={() => fetchSubmissions(a._id)}>
+                  {expandedAssignment === a._id ? 'Hide Submissions' : 'View Submissions'}
+                </Button>
+                {expandedAssignment === a._id && (
+                  <Box sx={{ mt: 2, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1 }}>Student Submissions</Typography>
+                    {(!submissionsData[a._id] || submissionsData[a._id].length === 0) ? (
+                      <Typography variant="body2">No submissions yet.</Typography>
+                    ) : (
+                      <List>
+                        {submissionsData[a._id].map(sub => (
+                          <ListItem key={sub._id} sx={{ borderBottom: '1px solid #ddd' }}>
+                            <ListItemText 
+                              primary={`${sub.studentId?.fullName} (USN: ${sub.studentId?.usn || 'N/A'})`} 
+                              secondary={`Submitted: ${new Date(sub.submittedAt).toLocaleString()}`} 
+                            />
+                            <Button variant="outlined" size="small" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/submissions/${sub.fileUrl}`} target="_blank">
+                              Download
+                            </Button>
+                          </ListItem>
+                        ))}
+                      </List>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            ) : (
+              <Box sx={{ mt: 2, borderTop: '1px solid #eee', pt: 2 }}>
+                <Button variant="contained" component="label">
+                  Submit Assignment
+                  <input type="file" hidden onChange={e => handleUploadSubmission(a._id, e.target.files[0])} />
+                </Button>
+              </Box>
+            )}
+          </Box>
+        ))}
+      </TabPanel>
     </Box>
   );
 };
