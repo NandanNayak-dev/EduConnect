@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -34,6 +34,10 @@ const ClassDetails = () => {
   const [assignments, setAssignments] = useState([]);
   const [submissionsData, setSubmissionsData] = useState({}); // { assignmentId: [submissions] }
   const [expandedAssignment, setExpandedAssignment] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [messageContent, setMessageContent] = useState('');
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -51,13 +55,14 @@ const ClassDetails = () => {
   const fetchClassData = async () => {
     try {
       const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
-      const [matRes, annRes, pollRes, studentRes, videoRes, assignRes] = await Promise.all([
+      const [matRes, annRes, pollRes, studentRes, videoRes, assignRes, msgRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/materials?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/announcements?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/polls?classId=${classId}`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/classes/${classId}/students`, { headers }),
         axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/videos?classId=${classId}`, { headers }),
-        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments?classId=${classId}`, { headers })
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments?classId=${classId}`, { headers }),
+        axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/messages?classId=${classId}`, { headers })
       ]);
       setMaterials(matRes.data.materials || []);
       setAnnouncements(annRes.data.announcements || []);
@@ -65,6 +70,7 @@ const ClassDetails = () => {
       setStudents(studentRes.data.students || []);
       setVideos(videoRes.data.videos || []);
       setAssignments(assignRes.data.assignments || []);
+      setMessages(msgRes.data.messages || []);
     } catch (error) {
       console.error("Error fetching class data", error);
     }
@@ -108,6 +114,20 @@ const ClassDetails = () => {
       setNewTitle(''); setPollOptions(['', '']);
       fetchClassData();
     } catch (error) { alert("Error posting poll."); }
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageContent.trim()) return;
+    try {
+      const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
+      await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/messages`, {
+        classId, receiverId: selectedStudent._id, content: messageContent
+      }, { headers });
+      setMessageDialogOpen(false);
+      setMessageContent('');
+      setSelectedStudent(null);
+      fetchClassData();
+    } catch (error) { alert("Error sending message."); }
   };
 
   const handleVote = async (pollId, optionId) => {
@@ -218,6 +238,7 @@ const ClassDetails = () => {
           <Tab label="Videos" />
           {role === 'teacher' && <Tab label="Students" />}
           <Tab label="Assignments" />
+          <Tab label="Messages" />
         </Tabs>
       </Box>
 
@@ -427,8 +448,11 @@ const ClassDetails = () => {
           ) : (
             <List>
               {students.map(s => (
-                <ListItem key={s._id} sx={{ borderBottom: '1px solid #eee' }}>
+                <ListItem key={s._id} sx={{ borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
                   <ListItemText primary={s.fullName} secondary={s.email} />
+                  <Button variant="outlined" size="small" onClick={() => { setSelectedStudent(s); setMessageDialogOpen(true); }}>
+                    Message
+                  </Button>
                 </ListItem>
               ))}
             </List>
@@ -515,6 +539,47 @@ const ClassDetails = () => {
           </Box>
         ))}
       </TabPanel>
+
+      {/* MESSAGES TAB */}
+      <TabPanel value={tabValue} index={role === 'teacher' ? 6 : 5}>
+        <Typography variant="h5" sx={{ mb: 2 }}>{role === 'teacher' ? 'Sent Messages' : 'Received Messages'}</Typography>
+        {messages.length === 0 ? (
+          <Typography>No messages found.</Typography>
+        ) : (
+          <List>
+            {messages.map(m => (
+              <Box key={m._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2, backgroundColor: '#f9f9f9' }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  {role === 'teacher' ? `To: ${m.receiverId?.fullName} (${m.receiverId?.email})` : `From: ${m.senderId?.fullName} (${m.senderId?.email})`} - {new Date(m.createdAt).toLocaleString()}
+                </Typography>
+                <Typography>{m.content}</Typography>
+              </Box>
+            ))}
+          </List>
+        )}
+      </TabPanel>
+
+      {/* MESSAGE DIALOG */}
+      <Dialog open={messageDialogOpen} onClose={() => setMessageDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Send Message to {selectedStudent?.fullName}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Message"
+            type="text"
+            fullWidth
+            multiline
+            rows={4}
+            value={messageContent}
+            onChange={(e) => setMessageContent(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMessageDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleSendMessage} variant="contained">Send</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

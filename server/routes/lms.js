@@ -7,7 +7,8 @@ import {
     addAnnouncement, getAnnouncements, deleteAnnouncement,
     addPoll, getPolls, votePoll, deletePoll,
     addVideo, getVideos, deleteVideo,
-    addAssignment, getAssignments, submitAssignment, getSubmissions, evaluateSubmission
+    addAssignment, getAssignments, submitAssignment, getSubmissions, evaluateSubmission,
+    sendMessage, getMessages
 } from '../controller/lms.js';
 
 const router = express.Router();
@@ -48,5 +49,9 @@ router.get('/assignments', getAssignments);
 router.post('/assignments/submit', uploadFile.single('submissions'), submitAssignment);
 router.get('/assignments/submissions', getSubmissions);
 router.patch('/assignments/submissions/:id/evaluate', evaluateSubmission);
+
+// Messages
+router.post('/messages', sendMessage);
+router.get('/messages', getMessages);
 
 export default router;

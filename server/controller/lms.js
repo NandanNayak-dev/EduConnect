@@ -5,6 +5,7 @@ import ClassModel from '../models/classSchema.js';
 import VideoModel from '../models/videoSchema.js';
 import AssignmentModel from '../models/assignmentSchema.js';
 import SubmissionModel from '../models/submissionSchema.js';
+import MessageModel from '../models/messageSchema.js';
 
 // --- Classes ---
 export const createClass = async (req, res) => {
@@ -334,6 +335,44 @@ export const evaluateSubmission = async (req, res) => {
         if (!submission) return res.status(404).json({ status: false, message: "Submission not found" });
         
         res.status(200).json({ status: true, message: "Submission evaluated status updated", submission });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+// --- Messages ---
+export const sendMessage = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can send direct messages" });
+        const { classId, receiverId, content } = req.body;
+        if (!classId || !receiverId || !content) return res.status(400).json({ status: false, message: "classId, receiverId, and content are required" });
+
+        const message = new MessageModel({ classId, senderId: req.user._id, receiverId, content });
+        await message.save();
+        res.status(201).json({ status: true, message: "Message sent successfully", data: message });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const getMessages = async (req, res) => {
+    try {
+        const { classId } = req.query;
+        if (!classId) return res.status(400).json({ status: false, message: "classId is required" });
+
+        let query = { classId };
+        if (req.user.role === 'student') {
+            query.receiverId = req.user._id;
+        } else if (req.user.role === 'teacher') {
+            query.senderId = req.user._id;
+        }
+
+        const messages = await MessageModel.find(query)
+            .populate('senderId', 'fullName email')
+            .populate('receiverId', 'fullName email usn')
+            .sort({ createdAt: -1 });
+            
+        res.status(200).json({ status: true, messages });
     } catch (error) {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }
