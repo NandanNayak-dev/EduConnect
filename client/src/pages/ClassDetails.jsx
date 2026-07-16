@@ -245,7 +245,7 @@ const ClassDetails = () => {
       {/* MATERIALS */}
       <TabPanel value={tabValue} index={0}>
         {role === 'teacher' && (
-          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+          <Box className="glass-panel" sx={{ mb: 4, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">Post New Material</Typography>
             <TextField fullWidth label="Title" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
             <TextField fullWidth label="Description" margin="normal" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
@@ -261,7 +261,7 @@ const ClassDetails = () => {
           </Box>
         )}
         {materials.map(m => (
-          <Box key={m._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
+          <Box key={m._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">{m.title}</Typography>
             <Typography variant="body2" color="text.secondary">By {m.teacherId?.fullName}</Typography>
             <Typography sx={{ mt: 1 }}>{m.description}</Typography>
@@ -285,7 +285,7 @@ const ClassDetails = () => {
       {/* ANNOUNCEMENTS */}
       <TabPanel value={tabValue} index={1}>
         {role === 'teacher' && (
-          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+          <Box className="glass-panel" sx={{ mb: 4, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">Post Announcement</Typography>
             <TextField fullWidth label="Title" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
             <TextField fullWidth multiline rows={3} label="Content" margin="normal" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
@@ -299,7 +299,7 @@ const ClassDetails = () => {
           </Box>
         )}
         {announcements.map(a => (
-          <Box key={a._id} sx={{ mb: 2, p: 2, border: a.urgent ? '2px solid red' : '1px solid #eee', borderRadius: 2, backgroundColor: a.urgent ? '#fff5f5' : 'transparent' }}>
+          <Box key={a._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3, border: a.urgent ? '2px solid red' : 'inherit', backgroundColor: a.urgent ? '#fff5f5' : 'transparent' }}>
             <Typography variant="h6" color={a.urgent ? 'error' : 'inherit'}>
               {a.urgent && '⚠️ '} {a.title}
             </Typography>
@@ -317,7 +317,7 @@ const ClassDetails = () => {
       {/* POLLS */}
       <TabPanel value={tabValue} index={2}>
         {role === 'teacher' && (
-          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+          <Box className="glass-panel" sx={{ mb: 4, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">Create Poll</Typography>
             <TextField fullWidth label="Question" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
             {pollOptions.map((opt, index) => (
@@ -420,7 +420,7 @@ const ClassDetails = () => {
           </Box>
         )}
         {videos.map(v => (
-          <Box key={v._id} sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+          <Box key={v._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">{v.title}</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>By {v.teacherId?.fullName}</Typography>
             <Typography sx={{ mb: 2 }}>{v.description}</Typography>
@@ -463,7 +463,7 @@ const ClassDetails = () => {
       {/* ASSIGNMENTS TAB */}
       <TabPanel value={tabValue} index={role === 'teacher' ? 5 : 4}>
         {role === 'teacher' && (
-          <Box sx={{ mb: 4, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+          <Box className="glass-panel" sx={{ mb: 4, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">Post New Assignment</Typography>
             <TextField fullWidth label="Title" margin="normal" value={newTitle} onChange={e => setNewTitle(e.target.value)} />
             <TextField fullWidth label="Description" margin="normal" value={newDesc} onChange={e => setNewDesc(e.target.value)} />
@@ -479,7 +479,7 @@ const ClassDetails = () => {
         )}
 
         {assignments.map(a => (
-          <Box key={a._id} sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
+          <Box key={a._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3 }}>
             <Typography variant="h6">{a.title}</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>By {a.teacherId?.fullName}</Typography>
             <Typography sx={{ mb: 2 }}>{a.description}</Typography>
@@ -548,7 +548,7 @@ const ClassDetails = () => {
         ) : (
           <List>
             {messages.map(m => (
-              <Box key={m._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2, backgroundColor: '#f9f9f9' }}>
+              <Box key={m._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3, borderLeft: m.isUrgent ? '4px solid red' : 'none' }}>
                 <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                   {role === 'teacher' ? `To: ${m.receiverId?.fullName} (${m.receiverId?.email})` : `From: ${m.senderId?.fullName} (${m.senderId?.email})`} - {new Date(m.createdAt).toLocaleString()}
                 </Typography>

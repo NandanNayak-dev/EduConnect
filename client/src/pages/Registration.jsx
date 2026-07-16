@@ -109,69 +109,65 @@ const Registration = () => {
   }, []);
   
   return (
-    <>
-      <Box height="100vh" sx={{ display: "flex" }}>
-        <Box
-          sx={{
-            flex: "1",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Box>
-            <img src="/images/auth.jpg" alt="" />
-          </Box>
+    <Box height="100vh" sx={{ display: "flex", backgroundColor: "background.default" }}>
+      <AlertBox />
+      {/* Left Side Illustration */}
+      <Box
+        sx={{
+          flex: "1",
+          display: { xs: 'none', md: 'flex' },
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "primary.main",
+          backgroundImage: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Decorative Circles */}
+        <Box sx={{ position: 'absolute', top: '-10%', left: '-10%', width: '300px', height: '300px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+        <Box sx={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '400px', height: '400px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+        <Box sx={{ p: 6, zIndex: 1, color: 'white', textAlign: 'center' }}>
+          <Typography variant="h2" sx={{ fontWeight: 'bold', mb: 2, textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>EduConnect</Typography>
+          <Typography variant="h5" sx={{ fontWeight: '300', opacity: 0.9 }}>Inspiring Perspectives, Connecting Ideas.</Typography>
         </Box>
-        <Box
-          sx={{
-            flex: 1,
-            backgroundColor: "background.paper",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
-          <AlertBox />
-          <Box width={1 / 2} mx="auto" my="auto">
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{ color: "text.primary", fontSize: "2.25rem", fontWeight: "bold" }}
-            >
-              Join Now
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit(onSubmit)}
-              sx={{ mt: 4 }}
-            >
-              <TextField
-                fullWidth
-                placeholder="Enter Full Name"
-                sx={{
-                  mb: 1,
-                  color: "text.primary",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "divider",
-                    },
-                    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "divider",
-                    },
-                  },
-                  "& .MuiInputLabel-outlined": {
-                    color: "text.primary",
-                  },
-                  "& .MuiInputBase-input": {
-                    "&::placeholder": {
-                      color: "text.primary",
-                    },
-                  },
-                }}
-                {...register("fullName", { required: true })}
-              />
+      </Box>
+
+      {/* Right Side Form */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: { xs: 2, md: 4 }
+        }}
+      >
+        <Box className="glass-panel" sx={{ width: '100%', maxWidth: '450px', p: { xs: 4, md: 6 }, borderRadius: 4 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            className="text-gradient"
+            sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 1 }}
+          >
+            Join Now
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+            Create an account to get started.
+          </Typography>
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <TextField
+              fullWidth
+              label="Full Name"
+              placeholder="Enter Full Name"
+              variant="outlined"
+              sx={{ mb: 2 }}
+              {...register("fullName", { required: true })}
+            />
               {errors.fullName && (
                 <Typography
                   variant="p"
@@ -181,31 +177,14 @@ const Registration = () => {
                   {errors.fullName.message}
                 </Typography>
               )}
-              <TextField
-                fullWidth
-                placeholder="Enter Email"
-                sx={{
-                  mb: 1,
-                  color: "text.primary",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "divider",
-                    },
-                    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "divider",
-                    },
-                  },
-                  "& .MuiInputLabel-outlined": {
-                    color: "text.primary",
-                  },
-                  "& .MuiInputBase-input": {
-                    "&::placeholder": {
-                      color: "text.primary",
-                    },
-                  },
-                }}
-                {...register("email", { required: true })}
-              />
+            <TextField
+              fullWidth
+              label="Email"
+              placeholder="Enter Email"
+              variant="outlined"
+              sx={{ mb: 2 }}
+              {...register("email", { required: true })}
+            />
               {errors.email && (
                 <Typography
                   variant="p"
@@ -215,39 +194,22 @@ const Registration = () => {
                   {errors.email.message}
                 </Typography>
               )}
-              <TextField
-                fullWidth
-                placeholder="Enter Password"
-                type="password"
-                sx={{
-                  mb: 1,
-                  color: "text.primary",
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "divider",
-                    },
-                    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "divider",
-                    },
-                  },
-                  "& .MuiInputLabel-outlined": {
-                    color: "text.primary",
-                  },
-                  "& .MuiInputBase-input": {
-                    "&::placeholder": {
-                      color: "text.primary",
-                    },
-                  },
-                }}
-                {...register("password", { required: true })}
-              />
+            <TextField
+              fullWidth
+              label="Password"
+              placeholder="Enter Password"
+              type="password"
+              variant="outlined"
+              sx={{ mb: 2 }}
+              {...register("password", { required: true })}
+            />
               {errors.password && (
                 <Typography variant="p" component="p" sx={{ color: "red", mb: 2 }}>
                   {errors.password.message}
                 </Typography>
               )}
-              <FormControl fullWidth sx={{ mb: 1 }}>
-                <InputLabel sx={{ color: "text.primary" }}>Role</InputLabel>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Role</InputLabel>
                 <Controller
                   name="role"
                   control={control}
@@ -255,15 +217,7 @@ const Registration = () => {
                     <Select
                       {...field}
                       label="Role"
-                      sx={{
-                        color: "text.primary",
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "divider",
-                        },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "divider",
-                        },
-                      }}
+                      sx={{ borderRadius: 2 }}
                     >
                       <MenuItem value="student">I am a Student</MenuItem>
                       <MenuItem value="teacher">I am a Teacher</MenuItem>
@@ -275,24 +229,10 @@ const Registration = () => {
                 <>
                   <TextField
                     fullWidth
+                    label="USN"
                     placeholder="Enter USN"
-                    sx={{
-                      mb: 1,
-                      color: "text.primary",
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "divider",
-                        },
-                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "divider",
-                        },
-                      },
-                      "& .MuiInputBase-input": {
-                        "&::placeholder": {
-                          color: "text.primary",
-                        },
-                      },
-                    }}
+                    variant="outlined"
+                    sx={{ mb: 2 }}
                     {...register("usn")}
                   />
                   {errors.usn && (
@@ -306,34 +246,33 @@ const Registration = () => {
                 type="submit"
                 variant="contained"
                 fullWidth
-                sx={{ mt: 4 }}
+                size="large"
+                sx={{ mt: 2, py: 1.5, fontSize: '1.1rem' }}
               >
                 Join
               </Button>
-            </Box>
-            <Divider sx={{ my: 1, color: "text.primary" }}>OR</Divider>
-            <Box>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                startIcon={<GoogleIcon />}
-              >
-                Continue With Google
-              </Button>
-            </Box>
-            <Box>
-              <Typography variant="body2" color="text.primary" sx={{ mt: 4 }}>
-                Already Have an Account?
-                <Link to="/login" style={{ color: "text.primary", marginLeft: "5px" }}>
-                  Log In
-                </Link>
-              </Typography>
-            </Box>
           </Box>
+          
+          <Divider sx={{ my: 4, color: "text.secondary" }}>OR</Divider>
+          
+          <Button
+            variant="outlined"
+            fullWidth
+            size="large"
+            startIcon={<GoogleIcon />}
+            sx={{ py: 1.5, borderColor: '#e2e8f0', color: 'text.primary', '&:hover': { borderColor: '#cbd5e1', backgroundColor: '#f8fafc' } }}
+          >
+            Continue With Google
+          </Button>
+          <Typography variant="body1" align="center" color="text.secondary" sx={{ mt: 4 }}>
+            Already have an account?
+            <Link to="/login" style={{ color: "#06b6d4", marginLeft: "8px", textDecoration: "none", fontWeight: "600" }}>
+              Log In
+            </Link>
+          </Typography>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 };
 

@@ -64,33 +64,33 @@ const Classes = () => {
   };
 
   return (
-    <Box sx={{ p: 4, width: '100%' }}>
-      <Typography variant="h4" sx={{ mb: 4, color: 'text.primary' }}>My Classes</Typography>
+    <Box sx={{ p: { xs: 2, md: 4 }, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
+      <Typography variant="h3" className="text-gradient" sx={{ mb: 4, fontWeight: 'bold' }}>My Classes</Typography>
 
       {role === 'teacher' ? (
-        <Box sx={{ mb: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Create a New Class</Typography>
-          <Grid container spacing={2}>
+        <Box className="glass-panel" sx={{ mb: 6, p: 4, borderRadius: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>Create a New Class</Typography>
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={5}>
-              <TextField fullWidth label="Class Name" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} />
+              <TextField variant="outlined" fullWidth label="Class Name" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} />
             </Grid>
             <Grid item xs={12} sm={5}>
-              <TextField fullWidth label="Description" value={newClassDescription} onChange={(e) => setNewClassDescription(e.target.value)} />
+              <TextField variant="outlined" fullWidth label="Description" value={newClassDescription} onChange={(e) => setNewClassDescription(e.target.value)} />
             </Grid>
-            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button variant="contained" fullWidth onClick={handleCreateClass}>Create</Button>
+            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'stretch' }}>
+              <Button size="large" variant="contained" fullWidth onClick={handleCreateClass} sx={{ height: '100%' }}>Create</Button>
             </Grid>
           </Grid>
         </Box>
       ) : (
-        <Box sx={{ mb: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Join a Class</Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={10}>
-              <TextField fullWidth label="Enter 6-Character Join Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
+        <Box className="glass-panel" sx={{ mb: 6, p: 4, borderRadius: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>Join a Class</Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={9} md={10}>
+              <TextField variant="outlined" fullWidth label="Enter 6-Character Join Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
             </Grid>
-            <Grid item xs={12} sm={2} sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button variant="contained" fullWidth onClick={handleJoinClass}>Join</Button>
+            <Grid item xs={12} sm={3} md={2} sx={{ display: 'flex', alignItems: 'stretch' }}>
+              <Button size="large" variant="contained" fullWidth onClick={handleJoinClass} sx={{ height: '100%' }}>Join</Button>
             </Grid>
           </Grid>
         </Box>
@@ -100,20 +100,23 @@ const Classes = () => {
         {classes.map((cls) => (
           <Grid item xs={12} sm={6} md={4} key={cls._id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h5" component="h2">{cls.name}</Typography>
-                <Typography color="text.secondary" sx={{ mb: 1.5 }}>
+              <Box sx={{ height: '80px', background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)', borderRadius: '16px 16px 0 0' }} />
+              <CardContent sx={{ flexGrow: 1, pt: 3 }}>
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 1 }}>{cls.name}</Typography>
+                <Typography color="text.secondary" sx={{ mb: 2, fontWeight: 500 }}>
                   Teacher: {cls.teacherId.fullName}
                 </Typography>
-                <Typography variant="body2">{cls.description}</Typography>
+                <Typography variant="body2" color="text.secondary">{cls.description}</Typography>
                 {role === 'teacher' && (
-                  <Typography variant="body2" color="primary" sx={{ mt: 2, fontWeight: 'bold' }}>
-                    Join Code: {cls.joinCode}
-                  </Typography>
+                  <Box sx={{ mt: 3, p: 1.5, backgroundColor: 'rgba(6, 182, 212, 0.1)', borderRadius: 2, display: 'inline-block' }}>
+                    <Typography variant="body2" sx={{ color: '#0891b2', fontWeight: 'bold' }}>
+                      Join Code: {cls.joinCode}
+                    </Typography>
+                  </Box>
                 )}
               </CardContent>
-              <CardActions>
-                <Button size="small" variant="outlined" onClick={() => navigate(`/classes/${cls._id}`)}>
+              <CardActions sx={{ p: 3, pt: 0 }}>
+                <Button fullWidth variant="outlined" onClick={() => navigate(`/classes/${cls._id}`)}>
                   Enter Class
                 </Button>
               </CardActions>

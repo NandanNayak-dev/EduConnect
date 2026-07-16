@@ -13,7 +13,7 @@ export default function NavBar() {
 
     return (
         <Box>
-            <AppBar position="static" sx={{ backgroundColor: "transparent", borderBottom: 1, borderColor: 'divider', padding: "5px 0" }} elevation={0} >
+            <AppBar position="sticky" className="glass-panel" sx={{ backgroundColor: "rgba(255, 255, 255, 0.6)", borderBottom: 1, borderColor: 'divider', padding: "5px 0", zIndex: theme.zIndex.drawer + 1 }} elevation={0} >
                 <Toolbar>
                     <Box sx={{ maxWidth: "1280px", width: "100%", marginLeft: "auto", marginRight: "auto" }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -21,10 +21,12 @@ export default function NavBar() {
                                 <Box sx={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: 'center' }}>
                                     <img src="./images/favicon.ico" width="45" alt="EduConnect" />
                                     <Typography
+                                        className="text-gradient"
                                         sx={{
-                                            color: 'text.primary',
-                                            fontWeight: 700,
-                                            fontFamily: "'Outfit', sans-serif"
+                                            fontWeight: 800,
+                                            fontFamily: "'Outfit', sans-serif",
+                                            fontSize: '1.5rem',
+                                            letterSpacing: '-0.5px'
                                         }}
                                         variant="h5"
                                         component="h1"
