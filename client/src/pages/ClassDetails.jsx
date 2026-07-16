@@ -172,7 +172,7 @@ const ClassDetails = () => {
       });
       alert("Assignment submitted successfully!");
       fetchClassData();
-    } catch (error) { alert("Error submitting assignment."); }
+    } catch (error) { alert(error.response?.data?.message || "Error submitting assignment."); }
   };
 
   const fetchSubmissions = async (assignmentId) => {
@@ -186,6 +186,17 @@ const ClassDetails = () => {
       setSubmissionsData(prev => ({ ...prev, [assignmentId]: res.data.submissions }));
       setExpandedAssignment(assignmentId);
     } catch (error) { alert("Error fetching submissions."); }
+  };
+
+  const handleEvaluate = async (submissionId, currentStatus, assignmentId) => {
+    try {
+      const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
+      await axios.patch(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submissions/${submissionId}/evaluate`, { evaluated: !currentStatus }, { headers });
+      
+      // Refresh submissions for this assignment
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submissions?assignmentId=${assignmentId}`, { headers });
+      setSubmissionsData(prev => ({ ...prev, [assignmentId]: res.data.submissions }));
+    } catch (error) { alert("Error evaluating submission."); }
   };
 
   const handleDeleteItem = async (type, id) => {
@@ -467,10 +478,15 @@ const ClassDetails = () => {
                     ) : (
                       <List>
                         {submissionsData[a._id].map(sub => (
-                          <ListItem key={sub._id} sx={{ borderBottom: '1px solid #ddd' }}>
+                          <ListItem key={sub._id} sx={{ borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center' }}>
+                            <FormControlLabel
+                              control={<Checkbox checked={sub.evaluated} onChange={() => handleEvaluate(sub._id, sub.evaluated, a._id)} />}
+                              label="Evaluated"
+                            />
                             <ListItemText 
                               primary={`${sub.studentId?.fullName} (USN: ${sub.studentId?.usn || 'N/A'})`} 
                               secondary={`Submitted: ${new Date(sub.submittedAt).toLocaleString()}`} 
+                              sx={{ ml: 2 }}
                             />
                             <Button variant="outlined" size="small" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/submissions/${sub.fileUrl}`} target="_blank">
                               Download
@@ -484,10 +500,16 @@ const ClassDetails = () => {
               </Box>
             ) : (
               <Box sx={{ mt: 2, borderTop: '1px solid #eee', pt: 2 }}>
-                <Button variant="contained" component="label">
-                  Submit Assignment
-                  <input type="file" hidden onChange={e => handleUploadSubmission(a._id, e.target.files[0])} />
-                </Button>
+                {a.submissionStatus === 'evaluated' ? (
+                  <Typography color="success.main" sx={{ fontWeight: 'bold' }}>Assignment Evaluated</Typography>
+                ) : a.submissionStatus === 'submitted' ? (
+                  <Typography color="primary.main">Assignment Submitted (Pending Evaluation)</Typography>
+                ) : (
+                  <Button variant="contained" component="label">
+                    Submit Assignment
+                    <input type="file" hidden onChange={e => handleUploadSubmission(a._id, e.target.files[0])} />
+                  </Button>
+                )}
               </Box>
             )}
           </Box>

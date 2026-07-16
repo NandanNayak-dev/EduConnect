@@ -18,6 +18,10 @@ const submissionSchema = new mongoose.Schema({
     submittedAt: {
         type: Date,
         default: Date.now
+    },
+    evaluated: {
+        type: Boolean,
+        default: false
     }
 });
 
