@@ -100,51 +100,25 @@ const Login = () => {
   }, []);
 
   return (
-    <Box height="100vh" sx={{ display: "flex", backgroundColor: "background.default" }}>
+    <Box height="100vh" sx={{ display: "flex", alignItems: 'center', justifyContent: 'center', backgroundColor: "#f0f2f5" }}>
       <AlertBox />
-      {/* Left Side Illustration */}
       <Box
         sx={{
-          flex: "1",
-          display: { xs: 'none', md: 'flex' },
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "primary.main",
-          backgroundImage: "linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Decorative Circles */}
-        <Box sx={{ position: 'absolute', top: '-10%', left: '-10%', width: '300px', height: '300px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
-        <Box sx={{ position: 'absolute', bottom: '-15%', right: '-5%', width: '400px', height: '400px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-        <Box sx={{ p: 6, zIndex: 1, color: 'white', textAlign: 'center' }}>
-          <Typography variant="h2" sx={{ fontWeight: 'bold', mb: 2, textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>EduConnect</Typography>
-          <Typography variant="h5" sx={{ fontWeight: '300', opacity: 0.9 }}>Inspiring Perspectives, Connecting Ideas.</Typography>
-        </Box>
-      </Box>
-
-      {/* Right Side Form */}
-      <Box
-        sx={{
-          flex: 1,
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          p: { xs: 2, md: 4 }
+          p: { xs: 2, md: 4 },
+          width: '100%',
+          maxWidth: '450px'
         }}
       >
-        <Box className="glass-panel" sx={{ width: '100%', maxWidth: '450px', p: { xs: 4, md: 6 }, borderRadius: 4 }}>
-          <Typography
-            variant="h3"
-            component="h1"
-            className="text-gradient"
-            sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 1 }}
-          >
-            Welcome Back
+        <Box sx={{ width: '100%', backgroundColor: '#fff', p: { xs: 4, md: 5 }, borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)', border: '1px solid #dadce0', textAlign: 'center' }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 400, color: '#202124', mb: 1 }}>
+            Sign in
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
-            Please log in to continue your journey.
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4, fontWeight: 400 }}>
+            to continue to EduConnect
           </Typography>
 
           <Box
@@ -205,7 +179,7 @@ const Login = () => {
                 size="large"
                 sx={{ mt: 4, py: 1.5, fontSize: '1.1rem' }}
               >
-                Log In
+                Next
               </Button>
           </Box>
           

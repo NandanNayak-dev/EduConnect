@@ -65,11 +65,11 @@ const Classes = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, width: '100%', maxWidth: '1200px', mx: 'auto' }}>
-      <Typography variant="h3" className="text-gradient" sx={{ mb: 4, fontWeight: 'bold' }}>My Classes</Typography>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 400, color: '#202124' }}>Classes</Typography>
 
       {role === 'teacher' ? (
-        <Box className="glass-panel" sx={{ mb: 6, p: 4, borderRadius: 4 }}>
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>Create a New Class</Typography>
+        <Box className="glass-panel" sx={{ mb: 6, p: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: '#202124' }}>Create a New Class</Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={5}>
               <TextField variant="outlined" fullWidth label="Class Name" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} />
@@ -83,8 +83,8 @@ const Classes = () => {
           </Grid>
         </Box>
       ) : (
-        <Box className="glass-panel" sx={{ mb: 6, p: 4, borderRadius: 4 }}>
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>Join a Class</Typography>
+        <Box className="glass-panel" sx={{ mb: 6, p: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: '#202124' }}>Join a Class</Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={9} md={10}>
               <TextField variant="outlined" fullWidth label="Enter 6-Character Join Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
@@ -99,27 +99,23 @@ const Classes = () => {
       <Grid container spacing={3}>
         {classes.map((cls) => (
           <Grid item xs={12} sm={6} md={4} key={cls._id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ height: '80px', background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)', borderRadius: '16px 16px 0 0' }} />
-              <CardContent sx={{ flexGrow: 1, pt: 3 }}>
-                <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold', mb: 1 }}>{cls.name}</Typography>
-                <Typography color="text.secondary" sx={{ mb: 2, fontWeight: 500 }}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', '&:hover': { boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15)' } }} onClick={() => navigate(`/classes/${cls._id}`)}>
+              <Box sx={{ height: '100px', backgroundColor: '#1a73e8', p: 2, color: 'white', position: 'relative' }}>
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 400 }}>{cls.name}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>{cls.description}</Typography>
+              </Box>
+              <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
                   Teacher: {cls.teacherId.fullName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">{cls.description}</Typography>
                 {role === 'teacher' && (
-                  <Box sx={{ mt: 3, p: 1.5, backgroundColor: 'rgba(6, 182, 212, 0.1)', borderRadius: 2, display: 'inline-block' }}>
-                    <Typography variant="body2" sx={{ color: '#0891b2', fontWeight: 'bold' }}>
-                      Join Code: {cls.joinCode}
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#5f6368', fontWeight: 500 }}>
+                      Class code: {cls.joinCode}
                     </Typography>
                   </Box>
                 )}
               </CardContent>
-              <CardActions sx={{ p: 3, pt: 0 }}>
-                <Button fullWidth variant="outlined" onClick={() => navigate(`/classes/${cls._id}`)}>
-                  Enter Class
-                </Button>
-              </CardActions>
             </Card>
           </Grid>
         ))}

@@ -28,13 +28,12 @@ const StatCard = ({ title, value, icon, color }) => {
       elevation={0} 
       sx={{ 
         flex: 1, 
-        backgroundColor: alpha(color, 0.1),
-        border: `1px solid ${alpha(color, 0.2)}`,
-        borderRadius: 3,
-        transition: 'transform 0.2s',
+        backgroundColor: '#fff',
+        border: '1px solid #dadce0',
+        borderRadius: 2,
+        transition: 'none',
         '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: `0 8px 24px ${alpha(color, 0.15)}`
+          boxShadow: 'none'
         }
       }}
     >
@@ -47,9 +46,9 @@ const StatCard = ({ title, value, icon, color }) => {
             sx={{ 
               p: 1, 
               borderRadius: 2, 
-              backgroundColor: color, 
+              backgroundColor: 'transparent', 
               display: 'flex', 
-              color: '#fff' 
+              color: color 
             }}
           >
             {icon}

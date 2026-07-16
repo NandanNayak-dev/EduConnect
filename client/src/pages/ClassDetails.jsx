@@ -229,16 +229,16 @@ const ClassDetails = () => {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)}>
-          <Tab label="Materials" />
-          <Tab label="Announcements" />
-          <Tab label="Polls" />
-          <Tab label="Videos" />
-          {role === 'teacher' && <Tab label="Students" />}
-          <Tab label="Assignments" />
-          <Tab label="Messages" />
+    <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: { xs: 1, md: 3 } }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)} variant="scrollable" scrollButtons="auto">
+          <Tab label="Materials" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label="Announcements" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label="Polls" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label="Videos" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          {role === 'teacher' && <Tab label="Students" sx={{ textTransform: 'none', fontWeight: 500 }} />}
+          <Tab label="Assignments" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label="Messages" sx={{ textTransform: 'none', fontWeight: 500 }} />
         </Tabs>
       </Box>
 
