@@ -7,9 +7,9 @@ import {
   useTheme,
   alpha
 } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import ArticleIcon from "@mui/icons-material/Article";
-import TaskIcon from "@mui/icons-material/Task";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import ClassIcon from "@mui/icons-material/Class";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -17,9 +17,6 @@ import Cookies from "js-cookie";
 import ProfileCardDetails from "../../components/profile/profile/ProfileCardDetails";
 import ActivityGrid from "../../components/profile/profile/ActivityGrid";
 import useEduConnect from "../hooks/useEduConnect";
-import RecentPost from "../../components/profile/profile/RecentPost";
-import LatestProduct from "../../components/profile/profile/LatestProduct";
-import OngoingTask from "../../components/profile/profile/OngoingTask";
 
 const StatCard = ({ title, value, icon, color }) => {
   const theme = useTheme();
@@ -28,8 +25,6 @@ const StatCard = ({ title, value, icon, color }) => {
       elevation={0} 
       sx={{ 
         flex: 1, 
-        backgroundColor: '#fff',
-        border: '1px solid #dadce0',
         borderRadius: 2,
         transition: 'none',
         '&:hover': {
@@ -119,24 +114,37 @@ const Profile = () => {
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} md={7} lg={8}>
           <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }} height="100%">
-            <StatCard 
-              title="Total Posts" 
-              value={data?.totalPosts} 
-              icon={<ArticleIcon />} 
-              color={theme.palette.primary.main} 
-            />
-            <StatCard 
-              title="Ongoing Tasks" 
-              value={data?.ongoingTasks} 
-              icon={<TaskIcon />} 
-              color={theme.palette.secondary.main} 
-            />
-            <StatCard 
-              title="Total Products" 
-              value={data?.totalProducts} 
-              icon={<ShoppingCartIcon />} 
-              color={theme.palette.success.main || '#10b981'} 
-            />
+            {data?.role === 'teacher' ? (
+              <>
+                <StatCard 
+                  title="Classes Created" 
+                  value={data?.totalClassesCreated} 
+                  icon={<ClassIcon />} 
+                  color={theme.palette.primary.main} 
+                />
+                <StatCard 
+                  title="Assignments Posted" 
+                  value={data?.totalAssignmentsPosted} 
+                  icon={<AssignmentIcon />} 
+                  color={theme.palette.secondary.main} 
+                />
+              </>
+            ) : (
+              <>
+                <StatCard 
+                  title="Classes Joined" 
+                  value={data?.totalClassesJoined} 
+                  icon={<ClassIcon />} 
+                  color={theme.palette.primary.main} 
+                />
+                <StatCard 
+                  title="Assignments Submitted" 
+                  value={data?.totalSubmissions} 
+                  icon={<AssignmentTurnedInIcon />} 
+                  color={theme.palette.success.main} 
+                />
+              </>
+            )}
           </Box>
         </Grid>
         
@@ -145,22 +153,6 @@ const Profile = () => {
         </Grid>
       </Grid>
 
-      <Typography variant="h5" fontWeight={700} mb={2} mt={4} color="text.primary">
-        Recent Activity
-      </Typography>
-      
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4}>
-          <OngoingTask />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <LatestProduct />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <RecentPost />
-        </Grid>
-      </Grid>
-      
       <Typography variant="h5" fontWeight={700} mb={2} mt={4} color="text.primary">
         Activity Grid
       </Typography>

@@ -14,7 +14,6 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -37,8 +36,8 @@ body {
 
 /* Google Classroom Flat Panel Utility */
 .glass-panel {
-  background: #ffffff !important;
-  border: 1px solid #dadce0 !important;
+  background: var(--mui-palette-background-paper, inherit) !important;
+  border: 1px solid var(--mui-palette-divider, #dadce0) !important;
   border-radius: 8px !important;
   box-shadow: none !important;
 }

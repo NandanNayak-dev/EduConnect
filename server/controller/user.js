@@ -3,9 +3,8 @@ import { check, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
 import UserModel from "../models/userSchema.js"
-import PostModel from '../models/postSchema.js';
-import ProductModel from '../models/productSchema.js';
-import TaskModel from '../models/taskSchema.js';
+import ClassModel from '../models/classSchema.js';
+import AssignmentModel from '../models/assignmentSchema.js';
 import SubmissionModel from '../models/submissionSchema.js';
 
 const registration = [
@@ -104,14 +103,19 @@ const getUserData = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const totalPosts = await PostModel.countDocuments({ authorId: userId });
-        const totalProducts = await ProductModel.countDocuments({ authorId: userId });
-        const ongoingTasks = await TaskModel.countDocuments({ authorId: userId, taskStatus: 'ongoing' });
-
         const user = req.user.toObject();
-        user.totalPosts = totalPosts;
-        user.totalProducts = totalProducts;
-        user.ongoingTasks = ongoingTasks;
+
+        if (user.role === 'teacher') {
+            const totalClassesCreated = await ClassModel.countDocuments({ teacherId: userId });
+            const totalAssignmentsPosted = await AssignmentModel.countDocuments({ teacherId: userId });
+            user.totalClassesCreated = totalClassesCreated;
+            user.totalAssignmentsPosted = totalAssignmentsPosted;
+        } else if (user.role === 'student') {
+            const totalClassesJoined = await ClassModel.countDocuments({ students: userId });
+            const totalSubmissions = await SubmissionModel.countDocuments({ studentId: userId });
+            user.totalClassesJoined = totalClassesJoined;
+            user.totalSubmissions = totalSubmissions;
+        }
 
         res.status(200).json({ status: true, message: "Data Fetched Successfully", user });
     } catch (error) {
@@ -236,78 +240,13 @@ const getUserActivity = async (req, res) => {
     };
 
     const [
-      posts,
-      products,
-      tasksCreated,
-      updatedTasks,
-      commentsAgg,
-      reactionsAgg,
+      classesCreated,
+      assignmentsPosted,
       userDoc,
       submissions,
     ] = await Promise.all([
-      PostModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
-      ProductModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
-      TaskModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
-      TaskModel.find({
-        authorId: userId,
-        updatedAt: { $gte: startDate, $lte: today },
-      }, "updatedAt"),
-      PostModel.aggregate([
-        { $unwind: "$comments" },
-        {
-          $match: {
-            "comments.userId": userId,
-            "comments.createdAt": {
-              $gte: startDate,
-              $lte: today,
-            },
-          },
-        },
-        {
-          $project: {
-            date: {
-              $dateToString: {
-                format: "%Y-%m-%d",
-                date: "$comments.createdAt",
-              },
-            },
-          },
-        },
-        {
-          $group: {
-            _id: "$date",
-            count: { $sum: 1 },
-          },
-        },
-      ]),
-      PostModel.aggregate([
-        { $unwind: "$reactions" },
-        {
-          $match: {
-            "reactions.userId": userId,
-            "reactions.createdAt": {
-              $gte: startDate,
-              $lte: today,
-            },
-          },
-        },
-        {
-          $project: {
-            date: {
-              $dateToString: {
-                format: "%Y-%m-%d",
-                date: "$reactions.createdAt",
-              },
-            },
-          },
-        },
-        {
-          $group: {
-            _id: "$date",
-            count: { $sum: 1 },
-          },
-        },
-      ]),
+      ClassModel.find({ teacherId: userId, ...dateFilter }, "createdAt"),
+      AssignmentModel.find({ teacherId: userId, ...dateFilter }, "createdAt"),
       UserModel.findById(userId),
       SubmissionModel.find({ 
         studentId: userId, 
@@ -323,19 +262,9 @@ const getUserActivity = async (req, res) => {
       });
     };
 
-    countByDate(posts);
-    countByDate(products);
-    countByDate(tasksCreated);
-    countByDate(updatedTasks, "updatedAt");
+    countByDate(classesCreated);
+    countByDate(assignmentsPosted);
     countByDate(submissions, "submittedAt");
-
-    commentsAgg.forEach(({ _id, count }) => {
-      if (activityMap[_id] !== undefined) activityMap[_id] += count;
-    });
-
-    reactionsAgg.forEach(({ _id, count }) => {
-      if (activityMap[_id] !== undefined) activityMap[_id] += count;
-    });
 
     // Include registration date as one activity
     if (userDoc) {

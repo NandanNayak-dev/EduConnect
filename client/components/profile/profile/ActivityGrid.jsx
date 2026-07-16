@@ -40,7 +40,7 @@ const ActivityGrid = () => {
     "Nov",
     "Dec",
   ];
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 
   let lastMonth = -1;
 
@@ -90,36 +90,7 @@ const ActivityGrid = () => {
   return (
     <Container maxWidth="lg" sx={{ margin: "30px auto" }}>
       <Grid container spacing={1} wrap="nowrap" alignItems="flex-start">
-        <Grid
-          item
-          container
-          sx={{
-            margin: "20px 0 0 0",
-            paddingLeft: "0px",
-            paddingTop: "0px",
-            width: "auto",
-          }}
-          flexDirection="column"
-        >
-          {dayNames.map((dayName, index) => (
-            <Grid
-              item
-              key={index}
-              sx={{
-                width: 15,
-                height: 15,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: "5px",
-              }}
-            >
-              <span style={{ fontSize: "10px", lineHeight: "0" }}>
-                {dayName}
-              </span>
-            </Grid>
-          ))}
-        </Grid>
+
         <Grid
           item
           container

@@ -12,10 +12,8 @@ const ProfileCardDetails = ({ data }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        backgroundColor: '#fff',
         borderRadius: 2,
-        color: '#202124',
-        border: '1px solid #dadce0',
+        color: 'text.primary',
         boxShadow: 'none',
       }}
     >
@@ -42,15 +40,15 @@ const ProfileCardDetails = ({ data }) => {
             <Typography
               variant="body1"
               sx={{
-                color: '#5f6368',
+                color: 'text.secondary',
                 fontWeight: 400
               }}
             >
               {data?.email || 'Loading...'}
             </Typography>
             {data?.role && (
-              <Box sx={{ mt: 2, display: 'inline-block', backgroundColor: data.role === 'teacher' ? '#e8f0fe' : '#f1f3f4', px: 2, py: 0.5, borderRadius: 16 }}>
-                <Typography variant="body2" sx={{ color: data.role === 'teacher' ? '#1a73e8' : '#5f6368', fontWeight: 500 }}>
+              <Box sx={{ mt: 2, display: 'inline-block', backgroundColor: data.role === 'teacher' ? alpha(theme.palette.primary.main, 0.1) : alpha(theme.palette.text.secondary, 0.1), px: 2, py: 0.5, borderRadius: 16 }}>
+                <Typography variant="body2" sx={{ color: data.role === 'teacher' ? theme.palette.primary.main : 'text.secondary', fontWeight: 500 }}>
                   {data.role === 'teacher' ? 'Teacher' : 'Student'}
                   {data.role === 'student' && data.usn ? ` - ${data.usn}` : ''}
                 </Typography>
@@ -61,7 +59,7 @@ const ProfileCardDetails = ({ data }) => {
             sx={{ 
               width: 90, 
               height: 90, 
-              border: "1px solid #dadce0",
+              border: `1px solid ${theme.palette.divider}`,
             }}
             alt={data?.fullName}
             src={data?.image || "https://cdn-icons-png.flaticon.com/512/5556/5556468.png"}

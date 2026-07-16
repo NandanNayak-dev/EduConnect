@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, alpha } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -22,6 +22,7 @@ function TabPanel(props) {
 }
 
 const ClassDetails = () => {
+  const theme = useTheme();
   const { classId } = useParams();
   const [tabValue, setTabValue] = useState(0);
   const [role, setRole] = useState('student');
@@ -299,7 +300,7 @@ const ClassDetails = () => {
           </Box>
         )}
         {announcements.map(a => (
-          <Box key={a._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3, border: a.urgent ? '2px solid red' : 'inherit', backgroundColor: a.urgent ? '#fff5f5' : 'transparent' }}>
+          <Box key={a._id} className="glass-panel" sx={{ mb: 3, p: 3, borderRadius: 3, border: a.urgent ? `2px solid ${theme.palette.error.main}` : 'inherit', backgroundColor: a.urgent ? alpha(theme.palette.error.main, 0.1) : 'transparent' }}>
             <Typography variant="h6" color={a.urgent ? 'error' : 'inherit'}>
               {a.urgent && '⚠️ '} {a.title}
             </Typography>

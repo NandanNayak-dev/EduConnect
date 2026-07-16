@@ -24,37 +24,57 @@ const Provider = ({ children }) => {
         palette: {
             mode,
             primary: {
-                main: '#4f46e5', // Deep Indigo
-                light: '#818cf8',
-                dark: '#3730a3',
+                main: '#1a73e8', // Google Blue
+                light: '#8ab4f8',
+                dark: '#174ea6',
             },
             secondary: {
-                main: '#e11d48', // Vibrant Rose
-                light: '#fb7185',
-                dark: '#be123c',
+                main: '#188038', // Google Green
+                light: '#5bb974',
+                dark: '#137333',
             },
             background: {
-                default: mode === 'light' ? '#f8fafc' : '#0f172a',
-                paper: mode === 'light' ? '#ffffff' : '#1e293b',
-            }
+                default: mode === 'light' ? '#ffffff' : '#202124',
+                paper: mode === 'light' ? '#ffffff' : '#2d2e30',
+            },
+            text: {
+                primary: mode === 'light' ? '#202124' : '#e8eaed',
+                secondary: mode === 'light' ? '#5f6368' : '#9aa0a6',
+            },
+            success: {
+                main: '#188038',
+            },
+            error: {
+                main: '#d93025',
+            },
         },
         typography: {
-            fontFamily: '"Plus Jakarta Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+            fontFamily: '"Roboto", "Google Sans", "Helvetica", "Arial", sans-serif',
             button: {
                 textTransform: 'none',
-                fontWeight: 600,
+                fontWeight: 500,
+                letterSpacing: '0.25px',
             }
         },
         shape: {
-            borderRadius: 12,
+            borderRadius: 8,
         },
         components: {
             MuiButton: {
                 styleOverrides: {
                     root: {
+                        borderRadius: 4,
+                        padding: '8px 24px',
                         boxShadow: 'none',
                         '&:hover': {
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
+                        }
+                    },
+                    containedPrimary: {
+                        background: mode === 'light' ? '#1a73e8' : '#8ab4f8',
+                        color: mode === 'light' ? '#fff' : '#202124',
+                        '&:hover': {
+                            background: mode === 'light' ? '#174ea6' : '#d2e3fc',
                         }
                     }
                 }
@@ -62,10 +82,9 @@ const Provider = ({ children }) => {
             MuiCard: {
                 styleOverrides: {
                     root: {
-                        boxShadow: mode === 'light' 
-                            ? '0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05)'
-                            : '0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5)',
-                        border: mode === 'light' ? '1px solid #e2e8f0' : '1px solid #334155',
+                        borderRadius: 8,
+                        boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
+                        border: mode === 'light' ? '1px solid #dadce0' : '1px solid #5f6368',
                         backgroundImage: 'none',
                     }
                 }

@@ -69,7 +69,7 @@ const Classes = () => {
 
       {role === 'teacher' ? (
         <Box className="glass-panel" sx={{ mb: 6, p: 4 }}>
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: '#202124' }}>Create a New Class</Typography>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: 'text.primary' }}>Create a New Class</Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={5}>
               <TextField variant="outlined" fullWidth label="Class Name" value={newClassName} onChange={(e) => setNewClassName(e.target.value)} />
@@ -84,7 +84,7 @@ const Classes = () => {
         </Box>
       ) : (
         <Box className="glass-panel" sx={{ mb: 6, p: 4 }}>
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: '#202124' }}>Join a Class</Typography>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: 500, color: 'text.primary' }}>Join a Class</Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={9} md={10}>
               <TextField variant="outlined" fullWidth label="Enter 6-Character Join Code" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} />
@@ -100,7 +100,7 @@ const Classes = () => {
         {classes.map((cls) => (
           <Grid item xs={12} sm={6} md={4} key={cls._id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', '&:hover': { boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15)' } }} onClick={() => navigate(`/classes/${cls._id}`)}>
-              <Box sx={{ height: '100px', backgroundColor: '#1a73e8', p: 2, color: 'white', position: 'relative' }}>
+              <Box sx={{ height: '100px', backgroundColor: 'primary.main', p: 2, color: 'primary.contrastText', position: 'relative' }}>
                 <Typography variant="h5" component="h2" sx={{ fontWeight: 400 }}>{cls.name}</Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>{cls.description}</Typography>
               </Box>
@@ -110,7 +110,7 @@ const Classes = () => {
                 </Typography>
                 {role === 'teacher' && (
                   <Box sx={{ mt: 2 }}>
-                    <Typography variant="body2" sx={{ color: '#5f6368', fontWeight: 500 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                       Class code: {cls.joinCode}
                     </Typography>
                   </Box>
