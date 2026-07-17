@@ -263,21 +263,7 @@ const Registration = () => {
                 Join Now
               </Button>
             </Box>
-            
-            <Divider sx={{ my: 3, color: "text.secondary", '&::before, &::after': { borderColor: 'divider' } }}>
-              OR
-            </Divider>
-            
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<GoogleIcon />}
-              sx={{ py: 1.2, borderRadius: 2, textTransform: 'none', fontWeight: 500, borderColor: 'divider', color: 'text.primary', '&:hover': { backgroundColor: 'action.hover' } }}
-            >
-              Continue With Google
-            </Button>
-            
+
             <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 3 }}>
               Already have an account?{" "}
               <Link to="/login" style={{ color: "#4f46e5", textDecoration: "none", fontWeight: "600" }}>

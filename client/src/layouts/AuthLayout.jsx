@@ -31,7 +31,7 @@ const AuthLayout = () => {
           minHeight: 700,
           m: 2,
           backgroundColor: 'background.paper',
-          borderRadius: 4,
+          borderRadius: 0,
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           overflow: 'hidden',
           position: 'relative',

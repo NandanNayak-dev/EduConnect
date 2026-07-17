@@ -185,21 +185,7 @@ const Login = () => {
                 Sign in
               </Button>
             </Box>
-            
-            <Divider sx={{ my: 3, color: "text.secondary", '&::before, &::after': { borderColor: 'divider' } }}>
-              OR
-            </Divider>
-            
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<GoogleIcon />}
-              sx={{ py: 1.5, borderRadius: 2, textTransform: 'none', fontWeight: 500, borderColor: 'divider', color: 'text.primary', '&:hover': { backgroundColor: 'action.hover' } }}
-            >
-              Continue With Google
-            </Button>
-            
+
             <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 4 }}>
               Don't have an account?{" "}
               <Link to="/registration" style={{ color: "#4f46e5", textDecoration: "none", fontWeight: "600" }}>
