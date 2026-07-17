@@ -14,6 +14,7 @@ import PropTypes from "prop-types";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import ClassIcon from '@mui/icons-material/Class';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -47,6 +48,11 @@ const UserSideBar = ({ children }) => {
       label: "Task Manager",
       url: "/task-management",
       icon: <PlaylistAddCheckIcon />,
+    },
+    {
+      label: "Calendar",
+      url: "/calendar",
+      icon: <CalendarMonthIcon />,
     },
     {
       label: "Setting",

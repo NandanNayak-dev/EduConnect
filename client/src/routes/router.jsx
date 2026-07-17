@@ -7,6 +7,7 @@ import Classes from "../pages/Classes";
 import ClassDetails from "../pages/ClassDetails";
 import UserSideBar from "../layouts/UserSideBar";
 import TaskManager from "../pages/TaskManager";
+import CalendarPage from "../pages/Calendar";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -73,7 +74,14 @@ const router = createBrowserRouter([
       </>
     ),
   },
-
+  {
+    path: "/calendar",
+    element: (
+      <UserSideBar>
+        <CalendarPage />
+      </UserSideBar>
+    ),
+  },
   {
     path: "/setting",
     element: (
