@@ -5,6 +5,7 @@ import {
   Typography,
   ButtonGroup,
   FormHelperText,
+  useTheme,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -13,6 +14,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { useFormContext, Controller } from "react-hook-form";
 
 const AddTask = ({ setSelectedDate, selectedDate }) => {
+  const theme = useTheme();
   const {
     control,
     register,
@@ -23,47 +25,32 @@ const AddTask = ({ setSelectedDate, selectedDate }) => {
   return (
     <Box
       sx={{
-        backgroundColor: "secondary.main",
+        backgroundColor: "background.paper",
         position: "absolute",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "595px",
-        minHeight: "325px",
-        border: "2px solid var(--mui-palette-primary-main, #4f46e5)",
-        borderRadius: "5px",
+        width: { xs: "90%", sm: "600px" },
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 3,
         boxShadow: 24,
         p: 4,
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
       }}
     >
-      <Box sx={{ display: "flex" }}>
+      <Typography variant="h5" fontWeight={600} color="text.primary" mb={1}>
+        Add New Task
+      </Typography>
+
+      <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
         <TextField
           variant="outlined"
           label="Task Title"
           type="text"
-          sx={{
-            input: { color: "primary.main" },
-            mt: 1,
-            mr: 1,
-            width: "50%",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-              "&:hover fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-            },
-            "& .MuiInputLabel-root": {
-              color: "primary.main",
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: "primary.main",
-            },
-          }}
+          fullWidth
           {...register("title", { required: "Task title is required" })}
           error={!!errors.title}
           helperText={errors.title?.message}
@@ -76,176 +63,102 @@ const AddTask = ({ setSelectedDate, selectedDate }) => {
               setValue("date", newDate);
             }}
             label="Select a Date"
-            renderInput={(params) => <TextField {...params} />}
-            sx={{
-              mt: 1,
-              width: "50%",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "primary.main",
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: "primary.main",
-              },
-              "& .MuiIconButton-root": {
-                color: "primary.main",
-              },
-              "& .MuiInputBase-inputAdornedEnd": {
-                color: "primary.main",
+            sx={{ width: "100%" }}
+            slotProps={{
+              textField: {
+                fullWidth: true,
               },
             }}
           />
         </LocalizationProvider>
       </Box>
-      <Box sx={{ display: "flex", mt: 1 }}>
+
+      <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
         <TextField
           multiline
           rows={4}
-          sx={{
-            textarea: { color: "primary.main" },
-            mt: 1,
-            mr: 1,
-            width: "50%",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-              "&:hover fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "var(--mui-palette-primary-main, #4f46e5)",
-              },
-            },
-            "& .MuiInputLabel-root": {
-              color: "primary.main",
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: "primary.main",
-            },
-          }}
           variant="outlined"
           label="Task Description"
+          fullWidth
           {...register("description", {
             required: "Task description is required",
           })}
           error={!!errors.description}
           helperText={errors.description?.message}
         />
-        <Box sx={{ width: "50%" }}>
+        
+        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <Typography
             variant="body2"
             sx={{
-              mt: 1,
-              mb: 2,
-              width: "50%",
-              color: "primary.main",
+              mb: 1.5,
+              fontWeight: 500,
+              color: "text.primary",
             }}
           >
             Task Priority
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <Controller
-              name="priority"
-              control={control}
-              rules={{ required: "Please select a priority" }}
-              defaultValue=""
-              render={({ field }) => (
-                <>
-                  <ButtonGroup
-                    variant="outlined"
-                    aria-label="outlined button group"
-                    fullWidth
-                  >
-                    <Button
-                      sx={{
-                        backgroundColor:
-                          field.value === "Low" ? "var(--mui-palette-primary-main, #4f46e5)" : "transparent",
-                        border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                        color: field.value === "Low" ? "white" : "var(--mui-palette-primary-main, #4f46e5)",
-                        "&:hover": {
-                          border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                          backgroundColor: "primary.main",
-                          color: "text.primary",
-                        },
-                      }}
-                      onClick={() => setValue("priority", "Low")}
-                    >
-                      Low
-                    </Button>
-                    <Button
-                      onClick={() => setValue("priority", "Moderate")}
-                      sx={{
-                        backgroundColor:
-                          field.value === "Moderate"
-                            ? "var(--mui-palette-primary-main, #4f46e5)"
-                            : "transparent",
-                        border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                        color: field.value === "Moderate" ? "white" : "var(--mui-palette-primary-main, #4f46e5)",
-                        "&:hover": {
-                          border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                          backgroundColor: "primary.main",
-                          color: "text.primary",
-                        },
-                      }}
-                    >
-                      Moderate
-                    </Button>
-                    <Button
-                      onClick={() => setValue("priority", "High")}
-                      sx={{
-                        backgroundColor:
-                          field.value === "High" ? "var(--mui-palette-primary-main, #4f46e5)" : "transparent",
-                        border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                        color: field.value === "High" ? "white" : "var(--mui-palette-primary-main, #4f46e5)",
-                        "&:hover": {
-                          border: "1px solid var(--mui-palette-primary-main, #4f46e5)",
-                          backgroundColor: "primary.main",
-                          color: "text.primary",
-                        },
-                      }}
-                    >
-                      High
-                    </Button>
-                  </ButtonGroup>
-                </>
-              )}
-            />
-            {errors.priority && (
-              <FormHelperText error>{errors.priority.message}</FormHelperText>
+          <Controller
+            name="priority"
+            control={control}
+            rules={{ required: "Please select a priority" }}
+            defaultValue=""
+            render={({ field }) => (
+              <ButtonGroup
+                variant="outlined"
+                aria-label="priority button group"
+                fullWidth
+                sx={{ mb: errors.priority ? 1 : 0 }}
+              >
+                <Button
+                  onClick={() => setValue("priority", "Low")}
+                  variant={field.value === "Low" ? "contained" : "outlined"}
+                  color={field.value === "Low" ? "info" : "primary"}
+                  sx={{ textTransform: "none" }}
+                >
+                  Low
+                </Button>
+                <Button
+                  onClick={() => setValue("priority", "Moderate")}
+                  variant={field.value === "Moderate" ? "contained" : "outlined"}
+                  color={field.value === "Moderate" ? "warning" : "primary"}
+                  sx={{ textTransform: "none" }}
+                >
+                  Moderate
+                </Button>
+                <Button
+                  onClick={() => setValue("priority", "High")}
+                  variant={field.value === "High" ? "contained" : "outlined"}
+                  color={field.value === "High" ? "error" : "primary"}
+                  sx={{ textTransform: "none" }}
+                >
+                  High
+                </Button>
+              </ButtonGroup>
             )}
-          </Box>
+          />
+          {errors.priority && (
+            <FormHelperText error>{errors.priority.message}</FormHelperText>
+          )}
         </Box>
       </Box>
+      
       <Button
         type="submit"
         fullWidth
         variant="contained"
+        size="large"
         sx={{
           mt: 2,
-          color: "text.primary",
-          backgroundColor: "primary.main",
-          "&:hover": { backgroundColor: "primary.main" },
+          py: 1.5,
+          fontSize: '1.05rem',
+          borderRadius: 2,
+          textTransform: 'none',
+          fontWeight: 600,
+          boxShadow: 2,
         }}
       >
-        Add
+        Create Task
       </Button>
     </Box>
   );
