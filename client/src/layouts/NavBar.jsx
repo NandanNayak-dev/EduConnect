@@ -13,7 +13,7 @@ export default function NavBar() {
 
     return (
         <Box>
-            <AppBar position="sticky" sx={{ backgroundColor: "#ffffff", borderBottom: 1, borderColor: '#dadce0', padding: "0", zIndex: theme.zIndex.drawer + 1 }} elevation={0} >
+            <AppBar position="sticky" sx={{ backgroundColor: "background.paper", color: 'text.primary', borderBottom: 1, borderColor: 'divider', padding: "0", zIndex: theme.zIndex.drawer + 1 }} elevation={0} >
                 <Toolbar>
                     <Box sx={{ maxWidth: "1280px", width: "100%", marginLeft: "auto", marginRight: "auto" }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -25,7 +25,7 @@ export default function NavBar() {
                                             fontWeight: 500,
                                             fontFamily: '"Google Sans", Roboto, Arial, sans-serif',
                                             fontSize: '1.375rem',
-                                            color: '#5f6368',
+                                            color: 'text.primary',
                                             letterSpacing: '0'
                                         }}
                                         variant="h5"
@@ -34,7 +34,7 @@ export default function NavBar() {
                                 </Box>
                             </Link>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Button onClick={toggleMode} variant="outlined" sx={{ color: 'text.primary', borderColor: 'text.primary', mr: 2 }} startIcon={mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}>
+                                <Button onClick={toggleMode} variant="outlined" color="inherit" sx={{ borderColor: 'divider', mr: 2 }} startIcon={mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}>
                                     {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
                                 </Button>
                                 {
