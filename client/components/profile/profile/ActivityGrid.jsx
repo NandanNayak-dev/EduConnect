@@ -1,4 +1,4 @@
-import { Container, Grid, Card, useTheme } from "@mui/material";
+import { Container, Box, Typography, Tooltip, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -87,17 +87,18 @@ const ActivityGrid = () => {
     console.log(activityData);
   }, []);
 
-  return (
-    <Container maxWidth="lg" sx={{ margin: "30px auto" }}>
-      <Grid container spacing={1} wrap="nowrap" alignItems="flex-start">
+  const getLeetCodeColor = (activity, mode) => {
+    if (activity === 0) return mode === "dark" ? "#2c2c2c" : "#ebedf0";
+    if (activity <= 1) return mode === "dark" ? "#0e4429" : "#9be9a8";
+    if (activity <= 3) return mode === "dark" ? "#006d32" : "#40c463";
+    if (activity <= 5) return mode === "dark" ? "#26a641" : "#30a14e";
+    return mode === "dark" ? "#39d353" : "#216e39";
+  };
 
-        <Grid
-          item
-          container
-          direction="row"
-          wrap="nowrap"
-          alignItems="flex-start"
-        >
+  return (
+    <Container maxWidth="lg" sx={{ margin: "30px auto", overflowX: "auto", pb: 2 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "max-content" }}>
+        <Box sx={{ display: "flex", gap: "4px" }}>
           {weeks.map((week, weekIndex) => {
             const firstDayOfWeek = week[0];
             const currentMonth = firstDayOfWeek.date.getMonth();
@@ -105,54 +106,74 @@ const ActivityGrid = () => {
             lastMonth = currentMonth;
 
             return (
-              <Grid
-                item
+              <Box
                 key={weekIndex}
-                container
-                direction="column"
-                sx={{ margin: "0 5px 0 0", padding: "0", width: "auto" }}
+                sx={{ display: "flex", flexDirection: "column", width: "14px" }}
               >
                 {isNewMonth ? (
-                  <span
-                    style={{
-                      textAlign: "center",
+                  <Typography
+                    variant="caption"
+                    sx={{
                       fontSize: "10px",
-                      fontWeight: "bold",
-                      marginBottom: "5px",
+                      color: "text.secondary",
+                      mb: 1,
+                      height: "15px",
+                      lineHeight: "15px",
+                      whiteSpace: "nowrap"
                     }}
                   >
                     {monthNames[currentMonth]}
-                  </span>
+                  </Typography>
                 ) : (
-                  <div style={{ height: "15px", marginBottom: "5px" }} />
+                  <Box sx={{ height: "15px", mb: 1 }} />
                 )}
-                {week.map((day, dayIndex) => (
-                  <Grid item key={dayIndex}>
-                    <Card
-                      sx={{
-                        width: 15,
-                        height: 15,
-                        borderRadius: "2px",
-                        cursor: "pointer",
-                        marginBottom: "5px",
-                        backgroundColor:
-                          day.activity === 0
-                            ? (theme.palette.mode === 'dark' ? '#161B22' : '#EBEDF0')
-                            : (theme.palette.mode === 'dark' 
-                                ? `rgba(57, 211, 83, ${day.activity / 5})` 
-                                : `rgba(0, 128, 0, ${day.activity / 5})`),
-                      }}
-                      title={`${day.date.toDateString()}: ${
-                        day.activity
-                      } contributions`}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {week.map((day, dayIndex) => (
+                    <Tooltip
+                      key={dayIndex}
+                      title={`${day.activity} submissions on ${day.date.toDateString()}`}
+                      arrow
+                      placement="top"
+                    >
+                      <Box
+                        sx={{
+                          width: "14px",
+                          height: "14px",
+                          borderRadius: "3px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          backgroundColor: getLeetCodeColor(day.activity, theme.palette.mode),
+                          '&:hover': {
+                            transform: "scale(1.15)",
+                            boxShadow: "0 0 4px rgba(0,0,0,0.3)"
+                          }
+                        }}
+                      />
+                    </Tooltip>
+                  ))}
+                </Box>
+              </Box>
             );
           })}
-        </Grid>
-      </Grid>
+        </Box>
+        
+        {/* Legend */}
+        <Box sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-end', mt: 2, gap: 1, color: 'text.secondary', fontSize: '12px' }}>
+          <Typography variant="caption">Less</Typography>
+          {[0, 1, 3, 5, 7].map((val, idx) => (
+            <Box
+              key={idx}
+              sx={{
+                width: "14px",
+                height: "14px",
+                borderRadius: "3px",
+                backgroundColor: getLeetCodeColor(val, theme.palette.mode),
+              }}
+            />
+          ))}
+          <Typography variant="caption">More</Typography>
+        </Box>
+      </Box>
     </Container>
   );
 };
