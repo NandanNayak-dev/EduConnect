@@ -11,6 +11,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import AdminSideBar from "../layouts/AdminSideBar";
+import AuthLayout from "../layouts/AuthLayout";
 import NotFound from "../pages/NotFound";
 import Setting from "../pages/Setting";
 import Users from "../pages/dashboard/Users";
@@ -24,12 +25,17 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/registration",
-    element: <Registration />,
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/registration",
+        element: <Registration />,
+      },
+    ],
   },
   {
     path: "/profile",

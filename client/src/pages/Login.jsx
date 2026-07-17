@@ -6,7 +6,9 @@ import {
   Checkbox,
   Button,
   Divider,
+  Grid,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
@@ -100,73 +102,74 @@ const Login = () => {
   }, []);
 
   return (
-    <Box height="100vh" sx={{ display: "flex", alignItems: 'center', justifyContent: 'center', backgroundColor: "#f0f2f5" }}>
+    <Box
+      component={motion.div}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0.7 }}
+      sx={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+    >
       <AlertBox />
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          p: { xs: 2, md: 4 },
-          width: '100%',
-          maxWidth: '450px'
-        }}
-      >
-        <Box sx={{ width: '100%', backgroundColor: '#fff', p: { xs: 4, md: 5 }, borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)', border: '1px solid #dadce0', textAlign: 'center' }}>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 400, color: '#202124', mb: 1 }}>
-            Sign in
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4, fontWeight: 400 }}>
-            to continue to EduConnect
-          </Typography>
+      <Grid container sx={{ height: '100%', minHeight: 600 }}>
+        {/* Left Side: Login Form */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          component={motion.div}
+          layoutId="auth-form"
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+          sx={{ 
+            p: { xs: 4, md: 8 }, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'center',
+            backgroundColor: 'background.paper',
+            zIndex: 2,
+          }}
+        >
+          <Box>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1, letterSpacing: '-0.5px' }}>
+              Welcome Back
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              Please enter your details to sign in.
+            </Typography>
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <TextField
-              fullWidth
-              label="Email"
-              placeholder="Enter Email"
-              variant="outlined"
-              sx={{ mb: 2 }}
-              {...register("email", { required: true })}
-            />
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+              <TextField
+                fullWidth
+                label="Email"
+                placeholder="Enter Email"
+                variant="outlined"
+                sx={{ mb: 2 }}
+                {...register("email", { required: true })}
+              />
               {errors.email && (
-                <Typography
-                  variant="p"
-                  component="p"
-                  sx={{ color: "red", mb: 2 }}
-                >
+                <Typography variant="body2" sx={{ color: "error.main", mb: 2, mt: -1.5 }}>
                   {errors.email.message}
                 </Typography>
               )}
-            <TextField
-              fullWidth
-              label="Password"
-              placeholder="Enter Password"
-              type="password"
-              variant="outlined"
-              sx={{ mb: 1 }}
-              {...register("password", { required: true })}
-            />
+              <TextField
+                fullWidth
+                label="Password"
+                placeholder="Enter Password"
+                type="password"
+                variant="outlined"
+                sx={{ mb: 2 }}
+                {...register("password", { required: true })}
+              />
               {errors.password && (
-                <Typography variant="p" component="p" sx={{ color: "red" }}>
+                <Typography variant="body2" sx={{ color: "error.main", mb: 2, mt: -1.5 }}>
                   {errors.password.message}
                 </Typography>
               )}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                 <FormControlLabel
                   control={<Checkbox color="primary" />}
                   label="Remember me"
-                  sx={{ mt: 1, color: "gray" }}
+                  sx={{ color: "text.secondary" }}
                 />
                 <Link style={{ color: "#4f46e5", textDecoration: "none", fontWeight: "500" }} to="/forgot-password">
                   Forgot Password?
@@ -177,34 +180,68 @@ const Login = () => {
                 variant="contained"
                 fullWidth
                 size="large"
-                sx={{ mt: 4, py: 1.5, fontSize: '1.1rem' }}
+                sx={{ py: 1.5, fontSize: '1.05rem', borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
               >
-                Next
+                Sign in
               </Button>
-          </Box>
-          
-          <Divider sx={{ my: 4, color: "text.secondary" }}>OR</Divider>
-          
-          <Button
-            variant="outlined"
-            fullWidth
-            size="large"
-            startIcon={<GoogleIcon />}
-            sx={{ py: 1.5, borderColor: '#e2e8f0', color: 'text.primary', '&:hover': { borderColor: '#cbd5e1', backgroundColor: '#f8fafc' } }}
-          >
-            Continue With Google
-          </Button>
-          <Typography variant="body1" align="center" color="text.secondary" sx={{ mt: 4 }}>
-            Don't have an account?
-            <Link
-              to="/registration"
-              style={{ color: "#06b6d4", marginLeft: "8px", textDecoration: "none", fontWeight: "600" }}
+            </Box>
+            
+            <Divider sx={{ my: 3, color: "text.secondary", '&::before, &::after': { borderColor: 'divider' } }}>
+              OR
+            </Divider>
+            
+            <Button
+              variant="outlined"
+              fullWidth
+              size="large"
+              startIcon={<GoogleIcon />}
+              sx={{ py: 1.5, borderRadius: 2, textTransform: 'none', fontWeight: 500, borderColor: 'divider', color: 'text.primary', '&:hover': { backgroundColor: 'action.hover' } }}
             >
-              Join Now
-            </Link>
+              Continue With Google
+            </Button>
+            
+            <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 4 }}>
+              Don't have an account?{" "}
+              <Link to="/registration" style={{ color: "#4f46e5", textDecoration: "none", fontWeight: "600" }}>
+                Sign Up
+              </Link>
+            </Typography>
+          </Box>
+        </Grid>
+
+        {/* Right Side: Branding */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          component={motion.div}
+          layoutId="auth-branding"
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+          sx={{
+            background: 'linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%)',
+            display: { xs: 'none', md: 'flex' },
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 6,
+            color: '#fff',
+            position: 'relative',
+            zIndex: 1,
+            overflow: 'hidden',
+          }}
+        >
+          {/* Decorative shapes */}
+          <Box sx={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+          <Box sx={{ position: 'absolute', bottom: -100, left: -50, width: 300, height: 300, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+          
+          <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, zIndex: 1, textAlign: 'center', letterSpacing: '-1px' }}>
+            EduConnect
           </Typography>
-        </Box>
-      </Box>
+          <Typography variant="h6" sx={{ fontWeight: 400, opacity: 0.9, textAlign: 'center', zIndex: 1, maxWidth: '80%' }}>
+            Empowering education through seamless digital connection.
+          </Typography>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
