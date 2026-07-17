@@ -20,17 +20,7 @@ const Banner = () => {
                         component="h1"
                     >EduConnect</Typography>
                     <Typography sx={{ color: "#797979" }} variant="body1">At EduConnect, our mission is to provide a dynamic and intuitive platform that empowers individuals to transform their ideas into actionable tasks.</Typography>
-                    <Box sx={{ margin: "30px 0 35px 0" }}>
-                        <form action="" method="post" >
-                            <TextField
-                                placeholder="Search Here ..."
-                                sx={{
-                                    width: '75%',
-                                }}
-
-                            />
-                        </form>
-                    </Box>
+                    <Box sx={{ margin: "30px 0 35px 0" }} />
                     <Stack direction="row" spacing={1}>
                         <Chip label="vr-gaming" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
                         <Chip label="blockchain" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
@@ -40,7 +30,7 @@ const Banner = () => {
                     </Stack>
                 </Grid>
                 <Grid item xs={6}>
-                    <img style={{ width: "100%" }} src="/images/banner.jpg" alt="EduConnect" />
+                    <img style={{ width: "100%" }} src="/images/banner.png" alt="EduConnect" />
                 </Grid>
             </Grid>
         </>
