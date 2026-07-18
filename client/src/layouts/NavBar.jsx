@@ -34,9 +34,9 @@ export default function NavBar() {
                                 </Box>
                             </Link>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Button onClick={toggleMode} variant="outlined" color="inherit" sx={{ borderColor: 'divider', mr: 2 }} startIcon={mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}>
-                                    {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                                </Button>
+                                <IconButton onClick={toggleMode} color="inherit" sx={{ mr: 2 }}>
+                                    {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+                                </IconButton>
                                 {
                                     !cookie && (
                                         <ButtonGroup variant="contained">
