@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, alpha } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, alpha, Badge } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -50,10 +50,36 @@ const ClassDetails = () => {
   const [isUrgent, setIsUrgent] = useState(false);
   const [pollOptions, setPollOptions] = useState(['', '']);
 
+  const [lastViewed, setLastViewed] = useState({
+    announcements: Number(localStorage.getItem(`class_${classId}_announcements`) || 0),
+    assignments: Number(localStorage.getItem(`class_${classId}_assignments`) || 0),
+    messages: Number(localStorage.getItem(`class_${classId}_messages`) || 0),
+  });
+
   useEffect(() => {
     setRole(Cookies.get(import.meta.env.VITE_USER_ROLE));
     fetchClassData();
   }, [classId]);
+
+  useEffect(() => {
+    if (role === 'student') {
+      const now = Date.now();
+      if (tabValue === 1) {
+        localStorage.setItem(`class_${classId}_announcements`, now);
+        setLastViewed(prev => ({ ...prev, announcements: now }));
+      } else if (tabValue === 4) {
+        localStorage.setItem(`class_${classId}_assignments`, now);
+        setLastViewed(prev => ({ ...prev, assignments: now }));
+      } else if (tabValue === 5) {
+        localStorage.setItem(`class_${classId}_messages`, now);
+        setLastViewed(prev => ({ ...prev, messages: now }));
+      }
+    }
+  }, [tabValue, classId, role]);
+
+  const hasNewAnnouncements = announcements.some(a => new Date(a.createdAt).getTime() > lastViewed.announcements);
+  const hasNewAssignments = assignments.some(a => new Date(a.createdAt).getTime() > lastViewed.assignments);
+  const hasNewMessages = messages.some(m => new Date(m.createdAt).getTime() > lastViewed.messages);
 
   const fetchClassData = async () => {
     try {
@@ -259,12 +285,24 @@ const ClassDetails = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)} variant="scrollable" scrollButtons="auto">
           <Tab label="Materials" sx={{ textTransform: 'none', fontWeight: 500 }} />
-          <Tab label="Announcements" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label={
+              <Badge color="error" variant="dot" invisible={role === 'teacher' || !hasNewAnnouncements}>
+                  Announcements
+              </Badge>
+          } sx={{ textTransform: 'none', fontWeight: 500 }} />
           <Tab label="Polls" sx={{ textTransform: 'none', fontWeight: 500 }} />
           <Tab label="Videos" sx={{ textTransform: 'none', fontWeight: 500 }} />
           {role === 'teacher' && <Tab label="Students" sx={{ textTransform: 'none', fontWeight: 500 }} />}
-          <Tab label="Assignments" sx={{ textTransform: 'none', fontWeight: 500 }} />
-          <Tab label="Messages" sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label={
+              <Badge color="error" variant="dot" invisible={role === 'teacher' || !hasNewAssignments}>
+                  Assignments
+              </Badge>
+          } sx={{ textTransform: 'none', fontWeight: 500 }} />
+          <Tab label={
+              <Badge color="error" variant="dot" invisible={role === 'teacher' || !hasNewMessages}>
+                  Messages
+              </Badge>
+          } sx={{ textTransform: 'none', fontWeight: 500 }} />
         </Tabs>
       </Box>
 
