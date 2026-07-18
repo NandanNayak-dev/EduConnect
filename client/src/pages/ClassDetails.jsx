@@ -39,6 +39,8 @@ const ClassDetails = () => {
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [messageContent, setMessageContent] = useState('');
+  const [submissionIdToResubmit, setSubmissionIdToResubmit] = useState(null);
+  const [assignmentIdToRefresh, setAssignmentIdToRefresh] = useState(null);
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -124,11 +126,34 @@ const ClassDetails = () => {
       await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/messages`, {
         classId, receiverId: selectedStudent._id, content: messageContent
       }, { headers });
-      setMessageDialogOpen(false);
-      setMessageContent('');
-      setSelectedStudent(null);
+      
+      if (submissionIdToResubmit) {
+        await axios.delete(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submissions/${submissionIdToResubmit}`, { headers });
+        if (assignmentIdToRefresh) {
+            const res = await axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/assignments/submissions?assignmentId=${assignmentIdToRefresh}`, { headers });
+            setSubmissionsData(prev => ({ ...prev, [assignmentIdToRefresh]: res.data.submissions }));
+        }
+      }
+
+      handleCloseMessageDialog();
       fetchClassData();
-    } catch (error) { alert("Error sending message."); }
+    } catch (error) { alert("Error sending message or requesting resubmit."); }
+  };
+
+  const handleCloseMessageDialog = () => {
+    setMessageDialogOpen(false);
+    setMessageContent('');
+    setSelectedStudent(null);
+    setSubmissionIdToResubmit(null);
+    setAssignmentIdToRefresh(null);
+  };
+
+  const handleRequestResubmit = (student, submissionId, assignmentId) => {
+    setSelectedStudent(student);
+    setSubmissionIdToResubmit(submissionId);
+    setAssignmentIdToRefresh(assignmentId);
+    setMessageContent('Your assignment needs to be resubmitted because: ');
+    setMessageDialogOpen(true);
   };
 
   const handleVote = async (pollId, optionId) => {
@@ -451,7 +476,7 @@ const ClassDetails = () => {
               {students.map(s => (
                 <ListItem key={s._id} sx={{ borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
                   <ListItemText primary={s.fullName} secondary={s.email} />
-                  <Button variant="outlined" size="small" onClick={() => { setSelectedStudent(s); setMessageDialogOpen(true); }}>
+                  <Button variant="outlined" size="small" onClick={() => { setSelectedStudent(s); setMessageContent(''); setMessageDialogOpen(true); }}>
                     Message
                   </Button>
                 </ListItem>
@@ -513,6 +538,15 @@ const ClassDetails = () => {
                               secondary={`Submitted: ${new Date(sub.submittedAt).toLocaleString()}`} 
                               sx={{ ml: 2 }}
                             />
+                            <Button 
+                              variant="outlined" 
+                              color="warning" 
+                              size="small" 
+                              sx={{ mr: 2 }}
+                              onClick={() => handleRequestResubmit(sub.studentId, sub._id, a._id)}
+                            >
+                              Resubmit
+                            </Button>
                             <Button variant="outlined" size="small" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/submissions/${sub.fileUrl}`} target="_blank">
                               Download
                             </Button>
@@ -561,7 +595,7 @@ const ClassDetails = () => {
       </TabPanel>
 
       {/* MESSAGE DIALOG */}
-      <Dialog open={messageDialogOpen} onClose={() => setMessageDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={messageDialogOpen} onClose={handleCloseMessageDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Send Message to {selectedStudent?.fullName}</DialogTitle>
         <DialogContent>
           <TextField
@@ -577,7 +611,7 @@ const ClassDetails = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setMessageDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleCloseMessageDialog}>Cancel</Button>
           <Button onClick={handleSendMessage} variant="contained">Send</Button>
         </DialogActions>
       </Dialog>

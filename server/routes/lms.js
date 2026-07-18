@@ -7,7 +7,7 @@ import {
     addAnnouncement, getAnnouncements, deleteAnnouncement,
     addPoll, getPolls, votePoll, deletePoll,
     addVideo, getVideos, deleteVideo,
-    addAssignment, getAssignments, submitAssignment, getSubmissions, evaluateSubmission,
+    addAssignment, getAssignments, submitAssignment, getSubmissions, evaluateSubmission, deleteSubmission,
     sendMessage, getMessages
 } from '../controller/lms.js';
 
@@ -49,6 +49,7 @@ router.get('/assignments', getAssignments);
 router.post('/assignments/submit', uploadFile.single('submissions'), submitAssignment);
 router.get('/assignments/submissions', getSubmissions);
 router.patch('/assignments/submissions/:id/evaluate', evaluateSubmission);
+router.delete('/assignments/submissions/:id', deleteSubmission);
 
 // Messages
 router.post('/messages', sendMessage);
