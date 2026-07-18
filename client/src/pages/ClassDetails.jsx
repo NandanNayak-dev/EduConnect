@@ -554,19 +554,19 @@ const ClassDetails = () => {
             )}
             
             {role === 'teacher' ? (
-              <Box sx={{ mt: 2, borderTop: '1px solid #eee', pt: 2 }}>
+              <Box sx={{ mt: 2, borderTop: 1, borderColor: 'divider', pt: 2 }}>
                 <Button variant="text" onClick={() => fetchSubmissions(a._id)}>
                   {expandedAssignment === a._id ? 'Hide Submissions' : 'View Submissions'}
                 </Button>
                 {expandedAssignment === a._id && (
-                  <Box sx={{ mt: 2, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+                  <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f9f9f9', borderRadius: 1 }}>
                     <Typography variant="subtitle2" sx={{ mb: 1 }}>Student Submissions</Typography>
                     {(!submissionsData[a._id] || submissionsData[a._id].length === 0) ? (
                       <Typography variant="body2">No submissions yet.</Typography>
                     ) : (
                       <List>
                         {submissionsData[a._id].map(sub => (
-                          <ListItem key={sub._id} sx={{ borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center' }}>
+                          <ListItem key={sub._id} sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
                             <FormControlLabel
                               control={<Checkbox checked={sub.evaluated} onChange={() => handleEvaluate(sub._id, sub.evaluated, a._id)} />}
                               label="Evaluated"

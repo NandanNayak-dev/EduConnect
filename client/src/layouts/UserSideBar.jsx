@@ -63,7 +63,7 @@ const UserSideBar = ({ children }) => {
       ),
     },
     {
-      label: "Setting",
+      label: "Settings",
       url: "/setting",
       icon: <SettingsIcon />,
     },
