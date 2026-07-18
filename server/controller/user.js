@@ -213,6 +213,13 @@ const getUsers = async (req, res) => {
     }
 }
 
+const getLocalYYYYMMDD = (d) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const getUserActivity = async (req, res) => {
   try {
     const { _id: userId } = req.user;
@@ -228,7 +235,7 @@ const getUserActivity = async (req, res) => {
     for (let i = 0; i < days; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
-      const key = date.toISOString().split("T")[0];
+      const key = getLocalYYYYMMDD(date);
       activityMap[key] = 0;
     }
 
@@ -257,7 +264,7 @@ const getUserActivity = async (req, res) => {
     // Count entries by their respective creation or update dates
     const countByDate = (docs, dateField = "createdAt") => {
       docs.forEach((doc) => {
-        const key = doc[dateField].toISOString().split("T")[0];
+        const key = getLocalYYYYMMDD(doc[dateField]);
         if (activityMap[key] !== undefined) activityMap[key]++;
       });
     };
@@ -268,7 +275,7 @@ const getUserActivity = async (req, res) => {
 
     // Include registration date as one activity
     if (userDoc) {
-      const createdKey = userDoc.createdAt.toISOString().split("T")[0];
+      const createdKey = getLocalYYYYMMDD(userDoc.createdAt);
       if (activityMap[createdKey] !== undefined) activityMap[createdKey]++;
     }
 
