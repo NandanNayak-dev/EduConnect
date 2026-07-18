@@ -104,7 +104,8 @@ const UserSideBar = ({ children }) => {
           if (response.data.status) {
             const todayStr = dayjs().format("YYYY-MM-DD");
             const noteForToday = response.data.notes.find(n => n.date === todayStr);
-            if (noteForToday) {
+            const lastVisited = localStorage.getItem('calendar_last_visited_date');
+            if (noteForToday && lastVisited !== todayStr) {
               setHasTodayNote(true);
             }
           }
@@ -115,6 +116,14 @@ const UserSideBar = ({ children }) => {
     };
     fetchTodayNote();
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/calendar') {
+      const todayStr = dayjs().format("YYYY-MM-DD");
+      localStorage.setItem('calendar_last_visited_date', todayStr);
+      setHasTodayNote(false);
+    }
+  }, [location.pathname]);
 
   return (
     <div>

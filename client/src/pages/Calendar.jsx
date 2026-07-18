@@ -120,6 +120,13 @@ const CalendarPage = () => {
         </Box>
       </Box>
 
+      {notes[dayjs().format("YYYY-MM-DD")] && (
+        <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 2, bgcolor: 'rgba(211, 47, 47, 0.1)', border: '1px solid', borderColor: 'error.main' }}>
+          <Typography variant="h6" fontWeight="bold" color="error.main">Today's Reminder</Typography>
+          <Typography variant="body1" sx={{ mt: 1 }}>{notes[dayjs().format("YYYY-MM-DD")]}</Typography>
+        </Paper>
+      )}
+
       <Grid container spacing={3}>
         {months.map((month) => {
           const days = getDaysInMonth(month);
