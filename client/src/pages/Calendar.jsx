@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Box, Typography, Grid, Paper, IconButton, useTheme, Modal, TextField, Button } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CloseIcon from "@mui/icons-material/Close";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -15,6 +16,7 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [noteText, setNoteText] = useState("");
+  const [isReminderDismissed, setIsReminderDismissed] = useState(false);
   
   const { setAlertBoxOpenStatus, setAlertSeverity, setAlertMessage, setLoadingStatus } = useEduConnect();
 
@@ -120,8 +122,15 @@ const CalendarPage = () => {
         </Box>
       </Box>
 
-      {notes[dayjs().format("YYYY-MM-DD")] && (
-        <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 2, bgcolor: 'rgba(211, 47, 47, 0.1)', border: '1px solid', borderColor: 'error.main' }}>
+      {notes[dayjs().format("YYYY-MM-DD")] && !isReminderDismissed && (
+        <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 2, bgcolor: 'rgba(211, 47, 47, 0.1)', border: '1px solid', borderColor: 'error.main', position: 'relative' }}>
+          <IconButton 
+            onClick={() => setIsReminderDismissed(true)} 
+            size="small" 
+            sx={{ position: 'absolute', top: 8, right: 8, color: 'error.main' }}
+          >
+            <CloseIcon />
+          </IconButton>
           <Typography variant="h6" fontWeight="bold" color="error.main">Today's Reminder</Typography>
           <Typography variant="body1" sx={{ mt: 1 }}>{notes[dayjs().format("YYYY-MM-DD")]}</Typography>
         </Paper>
