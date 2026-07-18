@@ -1,13 +1,45 @@
-import { useState } from "react";
-import { Box, Typography, Grid, Paper, IconButton, useTheme } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Typography, Grid, Paper, IconButton, useTheme, Modal, TextField, Button } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
+import axios from "axios";
+import Cookies from "js-cookie";
+import useEduConnect from "../hooks/useEduConnect";
 
 const CalendarPage = () => {
   const theme = useTheme();
   const [currentYear, setCurrentYear] = useState(dayjs().year());
+  const [notes, setNotes] = useState({});
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [noteText, setNoteText] = useState("");
+  
+  const { setAlertBoxOpenStatus, setAlertSeverity, setAlertMessage, setLoadingStatus } = useEduConnect();
+
+  const fetchNotes = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/calendar-notes`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}`,
+        },
+      });
+      if (response.data.status) {
+        const notesObj = {};
+        response.data.notes.forEach(note => {
+          notesObj[note.date] = note.note;
+        });
+        setNotes(notesObj);
+      }
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
   const months = Array.from({ length: 12 }, (_, i) => i);
   const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -25,6 +57,48 @@ const CalendarPage = () => {
       days.push(i);
     }
     return days;
+  };
+
+  const handleDayClick = (day, month) => {
+    if (!day) return;
+    const dateStr = dayjs().year(currentYear).month(month).date(day).format("YYYY-MM-DD");
+    setSelectedDate(dateStr);
+    setNoteText(notes[dateStr] || "");
+    setIsModalOpen(true);
+  };
+
+  const handleSaveNote = async () => {
+    try {
+      setLoadingStatus(true);
+      if (!noteText.trim()) {
+        // if empty, we could delete it, but let's just use delete route if needed, or delete if empty
+        await axios.delete(`${import.meta.env.VITE_SERVER_ENDPOINT}/calendar-notes/${selectedDate}`, {
+          headers: { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` },
+        });
+        setNotes(prev => {
+          const updated = { ...prev };
+          delete updated[selectedDate];
+          return updated;
+        });
+      } else {
+        await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/calendar-notes`, 
+          { date: selectedDate, note: noteText },
+          { headers: { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` } }
+        );
+        setNotes(prev => ({ ...prev, [selectedDate]: noteText }));
+      }
+      setAlertSeverity("success");
+      setAlertMessage("Note saved successfully!");
+      setAlertBoxOpenStatus(true);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      setAlertSeverity("error");
+      setAlertMessage("Failed to save note");
+      setAlertBoxOpenStatus(true);
+    } finally {
+      setLoadingStatus(false);
+    }
   };
 
   return (
@@ -92,9 +166,13 @@ const CalendarPage = () => {
                   
                   {days.map((day, idx) => {
                     const isToday = day && currentYear === dayjs().year() && month === dayjs().month() && day === dayjs().date();
+                    const dateStr = day ? dayjs().year(currentYear).month(month).date(day).format("YYYY-MM-DD") : null;
+                    const hasNote = dateStr && notes[dateStr];
+                    
                     return (
                       <Grid item xs={12 / 7} key={idx}>
                         <Box
+                          onClick={() => handleDayClick(day, month)}
                           sx={{
                             aspectRatio: "1/1",
                             display: "flex",
@@ -105,6 +183,7 @@ const CalendarPage = () => {
                             color: isToday ? "white" : "text.primary",
                             fontSize: "0.875rem",
                             fontWeight: isToday ? "bold" : "regular",
+                            position: "relative",
                             "&:hover": {
                               bgcolor: day && !isToday ? "action.hover" : (isToday ? "primary.dark" : "transparent"),
                               cursor: day ? "pointer" : "default",
@@ -112,6 +191,18 @@ const CalendarPage = () => {
                           }}
                         >
                           {day || ""}
+                          {hasNote && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                bottom: 2,
+                                width: 4,
+                                height: 4,
+                                borderRadius: "50%",
+                                bgcolor: isToday ? "white" : "error.main",
+                              }}
+                            />
+                          )}
                         </Box>
                       </Grid>
                     );
@@ -122,6 +213,41 @@ const CalendarPage = () => {
           );
         })}
       </Grid>
+
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: { xs: "90%", sm: 400 },
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 3,
+            outline: "none",
+          }}
+        >
+          <Typography variant="h6" mb={2}>
+            Note for {selectedDate ? dayjs(selectedDate).format("MMMM D, YYYY") : ""}
+          </Typography>
+          <TextField
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            placeholder="Add a reminder or note..."
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+          <Box display="flex" justifyContent="flex-end" gap={2}>
+            <Button onClick={() => setIsModalOpen(false)} color="inherit">Cancel</Button>
+            <Button onClick={handleSaveNote} variant="contained" color="primary">Save Note</Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };

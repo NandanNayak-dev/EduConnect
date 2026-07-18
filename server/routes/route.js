@@ -6,6 +6,7 @@ import admin from './admin.js';
 import task from './task.js';
 import product from './product.js';
 import lms from './lms.js';
+import calendarNote from './calendarNote.js';
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use("/admin", admin)
 router.use("/tasks", task)
 router.use("/products", product)
 router.use("/lms", lms)
+router.use("/calendar-notes", calendarNote)
 
 export default router;

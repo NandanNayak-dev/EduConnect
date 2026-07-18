@@ -5,7 +5,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  useTheme
+  useTheme,
+  Badge,
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -23,7 +24,9 @@ import Footer from "./Footer";
 import Cookies from "js-cookie";
 import useEduConnect from "../hooks/useEduConnect";
 import AlertBox from "../../components/common/AlertBox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
 
 
 const UserSideBar = ({ children }) => {
@@ -32,6 +35,7 @@ const UserSideBar = ({ children }) => {
   const theme = useTheme();
   const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
     useEduConnect();
+  const [hasTodayNote, setHasTodayNote] = useState(false);
 
   const listData = [
     {
@@ -52,7 +56,11 @@ const UserSideBar = ({ children }) => {
     {
       label: "Calendar",
       url: "/calendar",
-      icon: <CalendarMonthIcon />,
+      icon: (
+        <Badge color="error" variant="dot" invisible={!hasTodayNote}>
+          <CalendarMonthIcon />
+        </Badge>
+      ),
     },
     {
       label: "Setting",
@@ -84,6 +92,28 @@ const UserSideBar = ({ children }) => {
       Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "/" });
       navigate("/login");
     }
+
+    const fetchTodayNote = async () => {
+      try {
+        if (token) {
+          const response = await axios.get(`${import.meta.env.VITE_SERVER_ENDPOINT}/calendar-notes`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.data.status) {
+            const todayStr = dayjs().format("YYYY-MM-DD");
+            const noteForToday = response.data.notes.find(n => n.date === todayStr);
+            if (noteForToday) {
+              setHasTodayNote(true);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchTodayNote();
   }, []);
 
   return (
