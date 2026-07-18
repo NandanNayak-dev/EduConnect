@@ -42,7 +42,7 @@ const Footer = () => {
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: '300px' }}>
-              Connecting Ideas, Inspiring Perspectives. Join our platform to transform your ideas into actionable tasks.
+              Empowering Educators, Inspiring Students. Join our digital classroom to learn, collaborate, and succeed together.
             </Typography>
           </Grid>
           

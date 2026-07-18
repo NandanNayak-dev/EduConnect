@@ -8,7 +8,7 @@ const Banner = () => {
                 <Grid item xs={6} >
                     <Box sx={{ display: "flex", gap: "5px", color: "#797979" }}  >
                         <ConnectWithoutContactIcon />
-                        <Typography variant="body1" >Connecting Ideas, Inspiring Perspectives</Typography>
+                        <Typography variant="body1" >Empowering Educators, Inspiring Students</Typography>
                     </Box>
                     <Typography
                         sx={{
@@ -19,14 +19,14 @@ const Banner = () => {
                         variant="h1"
                         component="h1"
                     >EduConnect</Typography>
-                    <Typography sx={{ color: "#797979" }} variant="body1">At EduConnect, our mission is to provide a dynamic and intuitive platform that empowers individuals to transform their ideas into actionable tasks.</Typography>
+                    <Typography sx={{ color: "#797979" }} variant="body1">At EduConnect, our mission is to provide a dynamic and intuitive digital classroom that empowers teachers and students to learn, collaborate, and succeed together.</Typography>
                     <Box sx={{ margin: "30px 0 35px 0" }} />
                     <Stack direction="row" spacing={1}>
-                        <Chip label="vr-gaming" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
-                        <Chip label="blockchain" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
-                        <Chip label="crypto-currency" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
-                        <Chip label="machine-learning" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
-                        <Chip label="cyber-security" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
+                        <Chip label="online-learning" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
+                        <Chip label="assignments" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
+                        <Chip label="grading" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
+                        <Chip label="collaboration" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
+                        <Chip label="course-materials" sx={{ backgroundColor: "secondary.main", color: "text.primary", cursor: "pointer" }} />
                     </Stack>
                 </Grid>
                 <Grid item xs={6}>
