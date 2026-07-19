@@ -295,6 +295,18 @@ export const getAssignments = async (req, res) => {
     }
 };
 
+export const deleteAssignment = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can delete assignments" });
+        await AssignmentModel.findByIdAndDelete(req.params.id);
+        // We do NOT delete the associated submissions so that students do not lose their activity points!
+        // await SubmissionModel.deleteMany({ assignmentId: req.params.id });
+        res.status(200).json({ status: true, message: "Assignment deleted" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
 // --- Submissions ---
 export const submitAssignment = async (req, res) => {
     try {

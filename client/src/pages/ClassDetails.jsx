@@ -283,7 +283,7 @@ const ClassDetails = () => {
   return (
     <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: { xs: 1, md: 3 } }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)} variant="scrollable" scrollButtons="auto">
+        <Tabs value={tabValue} onChange={(e, val) => setTabValue(val)} variant="scrollable" scrollButtons="auto" sx={{ '& .MuiTab-root': { borderRight: 1, borderColor: 'divider' }, '& .MuiTab-root:last-child': { borderRight: 0 } }}>
           <Tab label="Materials" sx={{ textTransform: 'none', fontWeight: 500 }} />
           <Tab label={
               <Badge color="error" variant="dot" invisible={role === 'teacher' || !hasNewAnnouncements}>
@@ -557,6 +557,9 @@ const ClassDetails = () => {
               <Box sx={{ mt: 2, borderTop: 1, borderColor: 'divider', pt: 2 }}>
                 <Button variant="text" onClick={() => fetchSubmissions(a._id)}>
                   {expandedAssignment === a._id ? 'Hide Submissions' : 'View Submissions'}
+                </Button>
+                <Button variant="text" color="error" onClick={() => handleDeleteItem('assignments', a._id)} sx={{ ml: 2 }}>
+                  Delete Assignment
                 </Button>
                 {expandedAssignment === a._id && (
                   <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f9f9f9', borderRadius: 1 }}>
