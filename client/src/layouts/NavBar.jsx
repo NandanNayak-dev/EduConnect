@@ -19,7 +19,7 @@ export default function NavBar() {
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} >
                                 <Box sx={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: 'center' }}>
-                                    <img src="./images/favicon.ico" width="45" alt="EduConnect" />
+                                    <img src="./images/favicon.ico" width="45" alt="EduConnect" style={{ borderRadius: '50%' }} />
                                     <Typography
                                         sx={{
                                             fontWeight: 500,

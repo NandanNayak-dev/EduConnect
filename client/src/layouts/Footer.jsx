@@ -28,7 +28,7 @@ const Footer = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
             <Box sx={{ display: "flex", gap: "10px", alignItems: "center", mb: 2 }}>
-              <img src="/images/favicon.ico" width="40" alt="EduConnect" />
+              <img src="/images/favicon.ico" width="40" alt="EduConnect" style={{ borderRadius: '50%' }} />
               <Typography
                 sx={{
                   fontFamily: "'Outfit', sans-serif",
