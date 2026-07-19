@@ -6,6 +6,8 @@ import VideoModel from '../models/videoSchema.js';
 import AssignmentModel from '../models/assignmentSchema.js';
 import SubmissionModel from '../models/submissionSchema.js';
 import MessageModel from '../models/messageSchema.js';
+import UserModel from '../models/userSchema.js';
+import { sendEmail } from '../utils/sendEmail.js';
 
 // --- Classes ---
 export const createClass = async (req, res) => {
@@ -358,11 +360,21 @@ export const deleteSubmission = async (req, res) => {
 export const sendMessage = async (req, res) => {
     try {
         if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can send direct messages" });
-        const { classId, receiverId, content } = req.body;
+        const { classId, receiverId, content, isResubmission } = req.body;
         if (!classId || !receiverId || !content) return res.status(400).json({ status: false, message: "classId, receiverId, and content are required" });
 
         const message = new MessageModel({ classId, senderId: req.user._id, receiverId, content });
         await message.save();
+
+        if (isResubmission) {
+            const student = await UserModel.findById(receiverId);
+            if (student && student.email) {
+                const subject = "EduConnect: Assignment Resubmission Required";
+                const text = `Hello ${student.fullName},\n\nYour teacher has requested a resubmission for an assignment with the following message:\n\n"${content}"\n\nPlease log in to EduConnect to submit your updated work.\n\nThanks,\nEduConnect Team`;
+                await sendEmail(student.email, subject, text);
+            }
+        }
+
         res.status(201).json({ status: true, message: "Message sent successfully", data: message });
     } catch (error) {
         res.status(500).json({ status: false, message: "Internal Server Error" });

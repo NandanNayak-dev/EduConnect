@@ -150,7 +150,7 @@ const ClassDetails = () => {
     try {
       const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
       await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/messages`, {
-        classId, receiverId: selectedStudent._id, content: messageContent
+        classId, receiverId: selectedStudent._id, content: messageContent, isResubmission: !!submissionIdToResubmit
       }, { headers });
       
       if (submissionIdToResubmit) {

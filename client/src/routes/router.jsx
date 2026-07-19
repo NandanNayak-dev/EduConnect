@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Registration from "../pages/Registration";
 import Profile from "../pages/Profile";
+import ForgotPassword from "../pages/ForgotPassword";
 import Classes from "../pages/Classes";
 import ClassDetails from "../pages/ClassDetails";
 import UserSideBar from "../layouts/UserSideBar";
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/registration",
         element: <Registration />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
       },
     ],
   },

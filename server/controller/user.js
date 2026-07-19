@@ -6,6 +6,7 @@ import UserModel from "../models/userSchema.js"
 import ClassModel from '../models/classSchema.js';
 import AssignmentModel from '../models/assignmentSchema.js';
 import SubmissionModel from '../models/submissionSchema.js';
+import { sendEmail } from '../utils/sendEmail.js';
 
 const registration = [
     check('fullName').matches(/^[a-zA-Z ]+$/).withMessage('Only alphabets and at least one space are allowed'),
@@ -316,5 +317,71 @@ const removeUser = async (req, res) => {
     }
 
 }
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await UserModel.findOne({ email });
+        if (!user) return res.status(404).json({ status: false, message: "User not found with this email" });
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.otp = otp;
+        user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        await user.save();
+
+        const subject = "EduConnect: Password Reset OTP";
+        const text = `Hello ${user.fullName},\n\nYour OTP for password reset is: ${otp}\n\nThis OTP is valid for 10 minutes. Please do not share this with anyone.\n\nThanks,\nEduConnect Team`;
+        
+        const sent = await sendEmail(user.email, subject, text);
+        if (sent) {
+            res.status(200).json({ status: true, message: "OTP sent to your email" });
+        } else {
+            res.status(500).json({ status: false, message: "Failed to send OTP email" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        const user = await UserModel.findOne({ email, otp });
+
+        if (!user || user.otpExpires < Date.now()) {
+            return res.status(400).json({ status: false, message: "Invalid or expired OTP" });
+        }
+
+        res.status(200).json({ status: true, message: "OTP verified successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        const user = await UserModel.findOne({ email, otp });
+
+        if (!user || user.otpExpires < Date.now()) {
+            return res.status(400).json({ status: false, message: "Invalid or expired OTP" });
+        }
+
+        const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_GEN_SALT_NUMBER));
+        const hashPassword = await bcrypt.hash(newPassword, salt);
+
+        user.password = hashPassword;
+        user.otp = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+
+        res.status(200).json({ status: true, message: "Password reset successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
 
 export { registration, login, getUserData, changePassword, getUsers, removeUser, getUserActivity }
