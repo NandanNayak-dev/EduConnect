@@ -25,6 +25,7 @@ import Cookies from "js-cookie";
 import useEduConnect from "../hooks/useEduConnect";
 import AlertBox from "../../components/common/AlertBox";
 import { useEffect, useState } from "react";
+import ChatbotWidget from "../components/chat/ChatbotWidget";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -205,6 +206,7 @@ const UserSideBar = ({ children }) => {
         <Box sx={{ width: "100%", margin: "10px", backgroundColor: 'background.default' }}>{children}</Box>
       </Box>
       <Footer />
+      <ChatbotWidget />
     </div>
   );
 };
