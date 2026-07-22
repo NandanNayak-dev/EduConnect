@@ -62,7 +62,7 @@ const ProfileCardDetails = ({ data }) => {
               border: `1px solid ${theme.palette.divider}`,
             }}
             alt={data?.fullName}
-            src={data?.image || "https://cdn-icons-png.flaticon.com/512/5556/5556468.png"}
+            src={data?.image || (data?.role === 'teacher' ? "https://cdn-icons-png.flaticon.com/512/194/194936.png" : "https://cdn-icons-png.flaticon.com/512/5556/5556468.png")}
           />
         </Box>
       </CardContent>

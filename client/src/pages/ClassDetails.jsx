@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, alpha, Badge } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Button, TextField, Checkbox, FormControlLabel, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, alpha, Badge, CircularProgress } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -39,6 +39,7 @@ const ClassDetails = () => {
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [messageContent, setMessageContent] = useState('');
+  const [messageSending, setMessageSending] = useState(false);
   const [submissionIdToResubmit, setSubmissionIdToResubmit] = useState(null);
   const [assignmentIdToRefresh, setAssignmentIdToRefresh] = useState(null);
 
@@ -148,6 +149,7 @@ const ClassDetails = () => {
   const handleSendMessage = async () => {
     if (!messageContent.trim()) return;
     try {
+      setMessageSending(true);
       const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
       await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/messages`, {
         classId, receiverId: selectedStudent._id, content: messageContent, isResubmission: !!submissionIdToResubmit
@@ -164,6 +166,7 @@ const ClassDetails = () => {
       handleCloseMessageDialog();
       fetchClassData();
     } catch (error) { alert("Error sending message or requesting resubmit."); }
+    finally { setMessageSending(false); }
   };
 
   const handleCloseMessageDialog = () => {
@@ -652,8 +655,10 @@ const ClassDetails = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseMessageDialog}>Cancel</Button>
-          <Button onClick={handleSendMessage} variant="contained">Send</Button>
+          <Button onClick={handleCloseMessageDialog} disabled={messageSending}>Cancel</Button>
+          <Button onClick={handleSendMessage} variant="contained" disabled={messageSending}>
+            {messageSending ? <CircularProgress size={24} color="inherit" /> : 'Send'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
