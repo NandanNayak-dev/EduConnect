@@ -61,9 +61,9 @@ export const getClasses = async (req, res) => {
     try {
         let classes;
         if (req.user.role === 'teacher') {
-            classes = await ClassModel.find({ teacherId: req.user._id }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
+            classes = await ClassModel.find({ teacherId: req.user._id }).populate('teacherId', 'fullName email image').sort({ createdAt: -1 });
         } else if (req.user.role === 'student') {
-            classes = await ClassModel.find({ students: req.user._id }).populate('teacherId', 'fullName email').sort({ createdAt: -1 });
+            classes = await ClassModel.find({ students: req.user._id }).populate('teacherId', 'fullName email image').sort({ createdAt: -1 });
         } else {
             classes = [];
         }
