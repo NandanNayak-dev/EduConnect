@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField, Grid, Card, CardContent, CardActions } from '@mui/material';
+import { Box, Typography, Button, TextField, Grid, Card, CardContent, CardActions, Avatar } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -100,9 +100,27 @@ const Classes = () => {
         {classes.map((cls) => (
           <Grid item xs={12} sm={6} md={4} key={cls._id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer', '&:hover': { boxShadow: '0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15)' } }} onClick={() => navigate(`/classes/${cls._id}`)}>
-              <Box sx={{ height: '100px', backgroundColor: 'primary.main', p: 2, color: 'primary.contrastText', position: 'relative' }}>
-                <Typography variant="h5" component="h2" sx={{ fontWeight: 400 }}>{cls.name}</Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>{cls.description}</Typography>
+              <Box sx={{ height: '100px', backgroundColor: 'primary.main', p: 2, color: 'primary.contrastText', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ overflow: 'hidden' }}>
+                  <Typography variant="h5" component="h2" sx={{ fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cls.name}</Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cls.description}</Typography>
+                </Box>
+                <Avatar 
+                  sx={{ 
+                    width: 60, 
+                    height: 60,
+                    bgcolor: 'background.paper',
+                    color: 'primary.main',
+                    fontWeight: 'bold',
+                    fontSize: '1.8rem',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                    ml: 2,
+                    flexShrink: 0
+                  }}
+                  src={cls.teacherId?.image}
+                >
+                  {!cls.teacherId?.image && cls.teacherId?.fullName ? cls.teacherId.fullName.charAt(0).toUpperCase() : 'T'}
+                </Avatar>
               </Box>
               <CardContent sx={{ flexGrow: 1, pt: 2 }}>
                 <Typography variant="body2" color="text.secondary">

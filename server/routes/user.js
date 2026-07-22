@@ -1,5 +1,6 @@
 import express from 'express';
-import { getUserData, login, registration, changePassword, getUsers, removeUser, getUserActivity, forgotPassword, verifyOtp, resetPassword } from '../controller/user.js';
+import { getUserData, login, registration, changePassword, getUsers, removeUser, getUserActivity, forgotPassword, verifyOtp, resetPassword, uploadAvatar } from '../controller/user.js';
+import uploadFile from '../middleware/uploadFile.js';
 import userAuthentication from '../middleware/userAuthentication.js';
 import adminAuthentication from '../middleware/adminAuthentication.js';
 
@@ -12,6 +13,7 @@ user.post("/verify-otp", verifyOtp);
 user.post("/reset-password", resetPassword);
 user.get("/profile", userAuthentication, getUserData);
 user.get("/activity", userAuthentication, getUserActivity);
+user.put("/upload-avatar", userAuthentication, uploadFile.single('avatar'), uploadAvatar);
 user.put("/change-password", userAuthentication, changePassword);
 user.get("", adminAuthentication, getUsers);
 user.delete("/:userId", adminAuthentication, removeUser);
