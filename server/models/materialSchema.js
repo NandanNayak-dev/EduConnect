@@ -5,6 +5,8 @@ const materialSchema = new mongoose.Schema({
     description: { type: String, required: true },
     link: { type: String },
     fileUrl: { type: String },
+    aiSummary: { type: String },
+    aiQuestions: { type: String },
     teacherId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

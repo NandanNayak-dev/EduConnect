@@ -40,8 +40,11 @@ const ClassDetails = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [messageContent, setMessageContent] = useState('');
   const [messageSending, setMessageSending] = useState(false);
+  const [isUploadingMaterial, setIsUploadingMaterial] = useState(false);
   const [submissionIdToResubmit, setSubmissionIdToResubmit] = useState(null);
   const [assignmentIdToRefresh, setAssignmentIdToRefresh] = useState(null);
+  const [aiGuideOpen, setAiGuideOpen] = useState(false);
+  const [selectedAiMaterial, setSelectedAiMaterial] = useState(null);
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -108,6 +111,7 @@ const ClassDetails = () => {
 
   const handlePostMaterial = async () => {
     try {
+      setIsUploadingMaterial(true);
       const formData = new FormData();
       formData.append('title', newTitle);
       formData.append('description', newDesc);
@@ -119,6 +123,7 @@ const ClassDetails = () => {
       setNewTitle(''); setNewDesc(''); setNewLink(''); setNewFile(null);
       fetchClassData();
     } catch (error) { alert("Error posting material"); }
+    finally { setIsUploadingMaterial(false); }
   };
 
   const handlePostAnnouncement = async () => {
@@ -324,7 +329,9 @@ const ClassDetails = () => {
               </Button>
               {newFile && <Typography variant="body2" sx={{ display: 'inline', ml: 2 }}>{newFile.name}</Typography>}
             </Box>
-            <Button variant="contained" sx={{ mt: 1 }} onClick={handlePostMaterial}>Post Material</Button>
+            <Button variant="contained" sx={{ mt: 1 }} onClick={handlePostMaterial} disabled={isUploadingMaterial}>
+              {isUploadingMaterial ? <CircularProgress size={24} color="inherit" /> : 'Post Material'}
+            </Button>
           </Box>
         )}
         {materials.map(m => (
@@ -337,6 +344,18 @@ const ClassDetails = () => {
               <Box sx={{ mt: 1 }}>
                 <Button variant="outlined" href={`${import.meta.env.VITE_SERVER_ENDPOINT}/materials/${m.fileUrl}`} target="_blank">
                   Download PDF
+                </Button>
+              </Box>
+            )}
+            {(m.aiSummary || m.aiQuestions) && (
+              <Box sx={{ mt: 2 }}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={() => { setSelectedAiMaterial(m); setAiGuideOpen(true); }}
+                  sx={{ borderRadius: 6, display: 'flex', gap: 1, textTransform: 'none' }}
+                >
+                  ✨ View AI Study Guide
                 </Button>
               </Box>
             )}
@@ -639,26 +658,42 @@ const ClassDetails = () => {
       </TabPanel>
 
       {/* MESSAGE DIALOG */}
-      <Dialog open={messageDialogOpen} onClose={handleCloseMessageDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Send Message to {selectedStudent?.fullName}</DialogTitle>
+      <Dialog open={messageDialogOpen} onClose={handleCloseMessageDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Message {selectedStudent?.fullName}</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Message"
-            type="text"
-            fullWidth
-            multiline
-            rows={4}
-            value={messageContent}
-            onChange={(e) => setMessageContent(e.target.value)}
-          />
+          <TextField autoFocus margin="dense" label="Message" type="text" fullWidth multiline rows={4} value={messageContent} onChange={(e) => setMessageContent(e.target.value)} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseMessageDialog} disabled={messageSending}>Cancel</Button>
-          <Button onClick={handleSendMessage} variant="contained" disabled={messageSending}>
-            {messageSending ? <CircularProgress size={24} color="inherit" /> : 'Send'}
-          </Button>
+          <Button onClick={handleSendMessage} variant="contained" disabled={messageSending}>{messageSending ? <CircularProgress size={24} color="inherit" /> : 'Send'}</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* AI STUDY GUIDE DIALOG */}
+      <Dialog open={aiGuideOpen} onClose={() => setAiGuideOpen(false)} fullWidth maxWidth="md">
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, backgroundColor: alpha(theme.palette.primary.main, 0.05) }}>
+          ✨ AI Study Guide: {selectedAiMaterial?.title}
+        </DialogTitle>
+        <DialogContent dividers>
+          {selectedAiMaterial?.aiSummary && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>Chapter Summary</Typography>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                {selectedAiMaterial.aiSummary}
+              </Typography>
+            </Box>
+          )}
+          {selectedAiMaterial?.aiQuestions && (
+            <Box>
+              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>Important Exam Questions</Typography>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                {selectedAiMaterial.aiQuestions}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAiGuideOpen(false)} variant="contained" sx={{ textTransform: 'none' }}>Close</Button>
         </DialogActions>
       </Dialog>
     </Box>

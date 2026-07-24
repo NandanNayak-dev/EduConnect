@@ -8,6 +8,24 @@ import SubmissionModel from '../models/submissionSchema.js';
 import MessageModel from '../models/messageSchema.js';
 import UserModel from '../models/userSchema.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import fs from 'fs';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
+import OpenAI from 'openai';
+import path from 'path';
+
+// We will initialize openai lazily in the function so environment variables are loaded
+let openai = null;
+const getOpenAI = () => {
+    if (!openai) {
+        openai = new OpenAI({
+            apiKey: process.env.NVIDIA_API_KEY || 'dummy-key-if-missing',
+            baseURL: 'https://integrate.api.nvidia.com/v1',
+        });
+    }
+    return openai;
+};
 
 // --- Classes ---
 export const createClass = async (req, res) => {
@@ -91,9 +109,48 @@ export const addMaterial = async (req, res) => {
         const { title, description, link, classId } = req.body;
         if (!title || !description || !classId) return res.status(400).json({ status: false, message: "Title, description, and classId are required" });
         let fileUrl = "";
-        if (req.file) { fileUrl = `${req.file.filename}`; }
+        let aiSummary = "";
+        let aiQuestions = "";
 
-        const material = new MaterialModel({ title, description, link, fileUrl, classId, teacherId: req.user._id });
+        if (req.file) { 
+            fileUrl = `${req.file.filename}`; 
+            
+            // AI Document Parsing for PDFs
+            if (req.file.mimetype === 'application/pdf' && process.env.NVIDIA_API_KEY) {
+                try {
+                    const filePath = path.join(process.cwd(), process.env.UPLOAD_DIRECTORY, req.file.fieldname, req.file.filename);
+                    const dataBuffer = fs.readFileSync(filePath);
+                    const pdfData = await pdfParse(dataBuffer);
+                    const documentText = pdfData.text;
+
+                    const completion = await getOpenAI().chat.completions.create({
+                        model: "meta/llama3-70b-instruct",
+                        messages: [
+                            { role: "system", content: "You are an expert AI tutor. Analyze the provided document text. First, provide a clear, 3-paragraph summary of the chapter. Then, list the 5 most important exam questions a student should study based on this material. Format your response strictly as follows:\n\n### Chapter Summary\n[Summary here]\n\n### Important Exam Questions\n1. [Question 1]\n2. [Question 2]\n..." },
+                            { role: "user", content: `Document text: ${documentText.substring(0, 8000)}` } // Limit text to avoid token limits
+                        ],
+                        temperature: 0.2,
+                        top_p: 0.7,
+                        max_tokens: 1024,
+                    });
+
+                    const aiResponse = completion.choices[0]?.message?.content || "";
+                    // Split the response to store summary and questions separately if possible, or just store together
+                    const parts = aiResponse.split('### Important Exam Questions');
+                    if (parts.length === 2) {
+                        aiSummary = parts[0].replace('### Chapter Summary', '').trim();
+                        aiQuestions = parts[1].trim();
+                    } else {
+                        aiSummary = aiResponse; // fallback
+                    }
+                } catch (aiError) {
+                    console.error("AI Parsing Error:", aiError);
+                    // We don't fail the upload if AI parsing fails
+                }
+            }
+        }
+
+        const material = new MaterialModel({ title, description, link, fileUrl, classId, teacherId: req.user._id, aiSummary, aiQuestions });
         await material.save();
         res.status(201).json({ status: true, message: "Material added successfully", material });
     } catch (error) {
