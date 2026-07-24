@@ -131,7 +131,7 @@ export const addMaterial = async (req, res) => {
                         ],
                         temperature: 0.2,
                         top_p: 0.7,
-                        max_tokens: 1024,
+                        max_tokens: 8192,
                     });
 
                     const aiResponse = completion.choices[0]?.message?.content || "";
