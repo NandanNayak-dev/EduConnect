@@ -45,6 +45,7 @@ const ClassDetails = () => {
   const [assignmentIdToRefresh, setAssignmentIdToRefresh] = useState(null);
   const [aiGuideOpen, setAiGuideOpen] = useState(false);
   const [selectedAiMaterial, setSelectedAiMaterial] = useState(null);
+  const [aiGuideType, setAiGuideType] = useState('summary');
 
   // New item states
   const [newTitle, setNewTitle] = useState('');
@@ -348,15 +349,27 @@ const ClassDetails = () => {
               </Box>
             )}
             {(m.aiSummary || m.aiQuestions) && (
-              <Box sx={{ mt: 2 }}>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={() => { setSelectedAiMaterial(m); setAiGuideOpen(true); }}
-                  sx={{ borderRadius: 6, display: 'flex', gap: 1, textTransform: 'none' }}
-                >
-                  ✨ View AI Study Guide
-                </Button>
+              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                {m.aiSummary && (
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => { setSelectedAiMaterial(m); setAiGuideType('summary'); setAiGuideOpen(true); }}
+                    sx={{ borderRadius: 6, display: 'flex', gap: 1, textTransform: 'none' }}
+                  >
+                    📝 Chapter Summary
+                  </Button>
+                )}
+                {m.aiQuestions && (
+                  <Button 
+                    variant="contained" 
+                    color="secondary" 
+                    onClick={() => { setSelectedAiMaterial(m); setAiGuideType('questions'); setAiGuideOpen(true); }}
+                    sx={{ borderRadius: 6, display: 'flex', gap: 1, textTransform: 'none' }}
+                  >
+                    ❓ Important Questions
+                  </Button>
+                )}
               </Box>
             )}
             {role === 'teacher' && (
@@ -672,20 +685,18 @@ const ClassDetails = () => {
       {/* AI STUDY GUIDE DIALOG */}
       <Dialog open={aiGuideOpen} onClose={() => setAiGuideOpen(false)} fullWidth maxWidth="md">
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, backgroundColor: alpha(theme.palette.primary.main, 0.05) }}>
-          ✨ AI Study Guide: {selectedAiMaterial?.title}
+          {aiGuideType === 'summary' ? '📝 Chapter Summary' : '❓ Important Exam Questions'}: {selectedAiMaterial?.title}
         </DialogTitle>
         <DialogContent dividers>
-          {selectedAiMaterial?.aiSummary && (
+          {aiGuideType === 'summary' && selectedAiMaterial?.aiSummary && (
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>Chapter Summary</Typography>
               <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                 {selectedAiMaterial.aiSummary}
               </Typography>
             </Box>
           )}
-          {selectedAiMaterial?.aiQuestions && (
+          {aiGuideType === 'questions' && selectedAiMaterial?.aiQuestions && (
             <Box>
-              <Typography variant="h6" color="primary" sx={{ mb: 1 }}>Important Exam Questions</Typography>
               <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                 {selectedAiMaterial.aiQuestions}
               </Typography>
