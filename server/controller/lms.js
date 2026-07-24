@@ -126,7 +126,7 @@ export const addMaterial = async (req, res) => {
                     const completion = await getOpenAI().chat.completions.create({
                         model: "thinkingmachines/inkling",
                         messages: [
-                            { role: "system", content: "You are an expert AI tutor. Analyze the provided document text. First, provide a clear, 3-paragraph summary of the chapter. Then, list the 5 most important exam questions a student should study based on this material. Format your response strictly as follows:\n\n### Chapter Summary\n[Summary here]\n\n### Important Exam Questions\n1. [Question 1]\n2. [Question 2]\n..." },
+                            { role: "system", content: "You are an expert AI tutor. Analyze the provided document text. First, provide a clear, 3-paragraph summary of the chapter. Then, list the 10 most important exam questions a student should study based on this material. Format your response strictly as follows:\n\n### Chapter Summary\n[Summary here]\n\n### Important Exam Questions\n1. [Question 1]\n2. [Question 2]\n..." },
                             { role: "user", content: `Document text: ${documentText.substring(0, 8000)}` } // Limit text to avoid token limits
                         ],
                         temperature: 0.2,
