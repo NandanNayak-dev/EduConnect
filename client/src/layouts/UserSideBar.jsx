@@ -18,6 +18,7 @@ import ClassIcon from '@mui/icons-material/Class';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CodeIcon from "@mui/icons-material/Code";
 
 import NavBar from "./NavBar";
 import Footer from "./Footer";
@@ -79,9 +80,10 @@ const UserSideBar = ({ children }) => {
     navigate("/login");
   };
 
+  const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
+
   useEffect(() => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
-    const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
       if (role === "student" || role === "teacher") {
         // Allow them to stay in the UserSideBar Layout
@@ -177,6 +179,40 @@ const UserSideBar = ({ children }) => {
                 </NavLink>
               </ListItem>
             ))}
+            
+            {role === 'student' && (
+              <ListItem
+                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                component="div"
+              >
+                <NavLink
+                  to="/playground"
+                  style={{
+                    width: "100%",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    color: location.pathname === "/playground" ? theme.palette.primary.main : "inherit",
+                  }}
+                  activestyle={{ color: theme.palette.primary.main }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: location.pathname === "/playground" ? theme.palette.primary.main : "inherit",
+                    }}
+                  >
+                    <CodeIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Playground"
+                    sx={{
+                      color: location.pathname === "/playground" ? theme.palette.primary.main : "inherit",
+                    }}
+                  />
+                </NavLink>
+              </ListItem>
+            )}
+
             <ListItem
               sx={{ borderBottom: 1, borderColor: 'divider' }}
               component="div"
