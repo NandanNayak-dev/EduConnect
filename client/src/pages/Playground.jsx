@@ -9,9 +9,8 @@ import CodeIcon from '@mui/icons-material/Code';
 
 const LANGUAGE_VERSIONS = {
   java: '15.0.2',
-  c: '10.2.0',
-  cpp: '10.2.0',
   python: '3.10.0',
+  c: '10.2.0',
 };
 
 const CODE_SNIPPETS = {
@@ -24,12 +23,6 @@ const CODE_SNIPPETS = {
 
 int main() {
     printf("Hello World\n");
-    return 0;
-}`,
-  cpp: `#include <iostream>
-
-int main() {
-    std::cout << "Hello World" << std::endl;
     return 0;
 }`,
   python: `print("Hello World")`,
@@ -103,7 +96,6 @@ const Playground = () => {
             <MenuItem value="python">Python 3</MenuItem>
             <MenuItem value="java">Java</MenuItem>
             <MenuItem value="c">C</MenuItem>
-            <MenuItem value="cpp">C++</MenuItem>
           </Select>
 
           <Button
