@@ -472,3 +472,68 @@ export const getMessages = async (req, res) => {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }
 };
+
+export const executeCode = async (req, res) => {
+    try {
+        const { language, code } = req.body;
+        const { exec } = await import('child_process');
+        const fs = await import('fs');
+        const path = await import('path');
+        const { v4: uuidv4 } = await import('uuid');
+
+        const fileId = uuidv4();
+        let fileName = '';
+        let executeCommand = '';
+        const tempDir = path.join(process.cwd(), 'temp_code');
+
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir);
+        }
+
+        if (language === 'python') {
+            fileName = `${fileId}.py`;
+            executeCommand = `python "${path.join(tempDir, fileName)}"`;
+        } else if (language === 'c') {
+            fileName = `${fileId}.c`;
+            const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
+            executeCommand = `gcc "${path.join(tempDir, fileName)}" -o "${path.join(tempDir, outName)}" && "${path.join(tempDir, outName)}"`;
+        } else if (language === 'cpp') {
+            fileName = `${fileId}.cpp`;
+            const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
+            executeCommand = `g++ "${path.join(tempDir, fileName)}" -o "${path.join(tempDir, outName)}" && "${path.join(tempDir, outName)}"`;
+        } else if (language === 'java') {
+            const folder = path.join(tempDir, fileId);
+            fs.mkdirSync(folder);
+            fileName = path.join(fileId, `Main.java`);
+            executeCommand = `javac "${path.join(tempDir, fileName)}" && java -cp "${folder}" Main`;
+        }
+
+        const filePath = path.join(tempDir, fileName);
+        fs.writeFileSync(filePath, code);
+
+        exec(executeCommand, { timeout: 10000 }, (error, stdout, stderr) => {
+            // Clean up files (best effort)
+            try {
+                if (language === 'java') {
+                    fs.rmSync(path.join(tempDir, fileId), { recursive: true, force: true });
+                } else {
+                    fs.unlinkSync(filePath);
+                    if (language === 'c' || language === 'cpp') {
+                        const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
+                        if (fs.existsSync(path.join(tempDir, outName))) {
+                            fs.unlinkSync(path.join(tempDir, outName));
+                        }
+                    }
+                }
+            } catch(e) {}
+
+            if (error) {
+                return res.status(200).json({ stdout: '', stderr: stderr || error.message });
+            }
+            return res.status(200).json({ stdout, stderr });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to execute code locally" });
+    }
+};

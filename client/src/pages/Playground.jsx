@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, MenuItem, Select, Button, CircularProgress, useTheme } from '@mui/material';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const LANGUAGE_VERSIONS = {
@@ -53,21 +54,16 @@ const Playground = () => {
     setIsError(false);
 
     try {
-      const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/execute`, {
         language: language,
-        version: LANGUAGE_VERSIONS[language],
-        files: [
-          {
-            content: code,
-          },
-        ],
-      });
+        code: code
+      }, { headers: { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` } });
 
-      if (response.data.run.stderr) {
+      if (response.data.stderr) {
         setIsError(true);
-        setOutput(response.data.run.stderr);
+        setOutput(response.data.stderr);
       } else {
-        setOutput(response.data.run.stdout || 'Program executed successfully (no output).');
+        setOutput(response.data.stdout || 'Program executed successfully (no output).');
       }
     } catch (error) {
       setIsError(true);

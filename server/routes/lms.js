@@ -8,7 +8,7 @@ import {
     addPoll, getPolls, votePoll, deletePoll,
     addVideo, getVideos, deleteVideo,
     addAssignment, getAssignments, deleteAssignment, submitAssignment, getSubmissions, evaluateSubmission, deleteSubmission,
-    sendMessage, getMessages
+    sendMessage, getMessages, executeCode
 } from '../controller/lms.js';
 
 const router = express.Router();
@@ -55,5 +55,8 @@ router.delete('/assignments/submissions/:id', deleteSubmission);
 // Messages
 router.post('/messages', sendMessage);
 router.get('/messages', getMessages);
+
+// Code Execution
+router.post('/execute', executeCode);
 
 export default router;
