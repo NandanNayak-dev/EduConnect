@@ -496,10 +496,6 @@ export const executeCode = async (req, res) => {
             fileName = `${fileId}.c`;
             const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
             executeCommand = `gcc "${path.join(tempDir, fileName)}" -o "${path.join(tempDir, outName)}" && "${path.join(tempDir, outName)}"`;
-        } else if (language === 'cpp') {
-            fileName = `${fileId}.cpp`;
-            const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
-            executeCommand = `g++ "${path.join(tempDir, fileName)}" -o "${path.join(tempDir, outName)}" && "${path.join(tempDir, outName)}"`;
         } else if (language === 'java') {
             const folder = path.join(tempDir, fileId);
             fs.mkdirSync(folder);
@@ -517,7 +513,7 @@ export const executeCode = async (req, res) => {
                     fs.rmSync(path.join(tempDir, fileId), { recursive: true, force: true });
                 } else {
                     fs.unlinkSync(filePath);
-                    if (language === 'c' || language === 'cpp') {
+                    if (language === 'c') {
                         const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
                         if (fs.existsSync(path.join(tempDir, outName))) {
                             fs.unlinkSync(path.join(tempDir, outName));
