@@ -479,9 +479,8 @@ export const executeCode = async (req, res) => {
         const { exec } = await import('child_process');
         const fs = await import('fs');
         const path = await import('path');
-        const { v4: uuidv4 } = await import('uuid');
 
-        const fileId = uuidv4();
+        const fileId = Date.now().toString() + Math.floor(Math.random() * 1000).toString();
         let fileName = '';
         let executeCommand = '';
         const tempDir = path.join(process.cwd(), 'temp_code');
