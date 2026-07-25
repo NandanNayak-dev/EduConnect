@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Typography, MenuItem, Select, Button, CircularProgress, useTheme } from '@mui/material';
+import { Box, Typography, MenuItem, Select, Button, CircularProgress, useTheme, Paper } from '@mui/material';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import CodeIcon from '@mui/icons-material/Code';
 
 const LANGUAGE_VERSIONS = {
   java: '15.0.2',
@@ -74,18 +76,29 @@ const Playground = () => {
   };
 
   return (
-    <Box sx={{ p: 3, height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-          💻 Code Playground
-        </Typography>
+    <Box sx={{ p: { xs: 2, md: 4 }, height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#f8fafc' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ p: 1, borderRadius: 2, backgroundColor: 'primary.main', display: 'flex', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <CodeIcon />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: '-0.5px' }}>
+            Code Playground
+          </Typography>
+        </Box>
 
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <Select
             value={language}
             onChange={handleLanguageChange}
             size="small"
-            sx={{ minWidth: 150, backgroundColor: 'background.paper' }}
+            sx={{ 
+              minWidth: 160, 
+              backgroundColor: 'background.paper',
+              borderRadius: 2,
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.divider },
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+            }}
           >
             <MenuItem value="python">Python 3</MenuItem>
             <MenuItem value="java">Java</MenuItem>
@@ -99,15 +112,29 @@ const Playground = () => {
             onClick={handleRunCode}
             disabled={isLoading}
             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <PlayArrowIcon />}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              textTransform: 'none',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }}
           >
-            {isLoading ? 'Running...' : 'Run Code'}
+            {isLoading ? 'Executing...' : 'Run Code'}
           </Button>
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', flexGrow: 1, gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
-        <Box sx={{ flex: 1, borderRadius: 2, overflow: 'hidden', border: `1px solid ${theme.palette.divider}` }}>
-          <Editor
+      <Box sx={{ display: 'flex', flexGrow: 1, gap: 3, flexDirection: { xs: 'column', md: 'row' }, minHeight: 0 }}>
+        <Paper elevation={0} sx={{ flex: 1.5, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', gap: 1 }}>
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#27c93f' }} />
+          </Box>
+          <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+            <Editor
             height="100%"
             language={language === 'c' || language === 'cpp' ? 'cpp' : language}
             value={code}
@@ -120,28 +147,32 @@ const Playground = () => {
               automaticLayout: true,
             }}
           />
-        </Box>
+          </Box>
+        </Paper>
 
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
-            Terminal Output
-          </Typography>
+        <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TerminalIcon fontSize="small" color="action" />
+            <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+              Terminal Output
+            </Typography>
+          </Box>
           <Box
             sx={{
               flexGrow: 1,
-              backgroundColor: '#1e1e1e',
-              color: isError ? '#ff6b6b' : '#a6e22e',
-              p: 2,
-              borderRadius: 2,
-              fontFamily: 'monospace',
+              backgroundColor: '#0d1117',
+              color: isError ? '#ff7b72' : '#56d364',
+              p: 3,
+              fontFamily: '"Fira Code", monospace',
+              fontSize: '14px',
+              lineHeight: 1.6,
               whiteSpace: 'pre-wrap',
               overflowY: 'auto',
-              border: `1px solid ${theme.palette.divider}`,
             }}
           >
-            {output ? output : 'Click "Run Code" to see the output here...'}
+            {output ? output : <Typography sx={{ color: '#8b949e', fontStyle: 'italic', fontSize: '14px', fontFamily: 'inherit' }}>Waiting for code execution...</Typography>}
           </Box>
-        </Box>
+        </Paper>
       </Box>
     </Box>
   );
