@@ -2,7 +2,7 @@ import express from 'express';
 import userAuthentication from '../middleware/userAuthentication.js';
 import uploadFile from '../middleware/uploadFile.js';
 import {
-    createClass, joinClass, getClasses, getClassStudents,
+    createClass, joinClass, getClasses, getClassStudents, removeStudentFromClass,
     addMaterial, getMaterials, deleteMaterial,
     addAnnouncement, getAnnouncements, deleteAnnouncement,
     addPoll, getPolls, votePoll, deletePoll,
@@ -21,6 +21,7 @@ router.post('/classes', createClass);
 router.post('/classes/join', joinClass);
 router.get('/classes', getClasses);
 router.get('/classes/:classId/students', getClassStudents);
+router.delete('/classes/:classId/students/:studentId', removeStudentFromClass);
 
 // Materials
 router.post('/materials', uploadFile.single('materials'), addMaterial);

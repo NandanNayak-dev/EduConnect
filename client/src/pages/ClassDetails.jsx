@@ -289,6 +289,16 @@ const ClassDetails = () => {
     } catch (error) { alert(`Error deleting ${type}.`); }
   };
 
+  const handleRemoveStudent = async (studentId) => {
+    if (!window.confirm("Are you sure you want to remove this student from the class?")) return;
+    try {
+      const headers = { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` };
+      await axios.delete(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/classes/${classId}/students/${studentId}`, { headers });
+      alert("Student removed successfully.");
+      fetchClassData();
+    } catch (error) { alert("Error removing student."); }
+  };
+
   return (
     <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto', p: { xs: 1, md: 3 } }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
@@ -549,9 +559,14 @@ const ClassDetails = () => {
               {students.map(s => (
                 <ListItem key={s._id} sx={{ borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
                   <ListItemText primary={s.fullName} secondary={s.email} />
-                  <Button variant="outlined" size="small" onClick={() => { setSelectedStudent(s); setMessageContent(''); setMessageDialogOpen(true); }}>
-                    Message
-                  </Button>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button variant="outlined" size="small" onClick={() => { setSelectedStudent(s); setMessageContent(''); setMessageDialogOpen(true); }}>
+                      Message
+                    </Button>
+                    <Button variant="outlined" color="error" size="small" onClick={() => handleRemoveStudent(s._id)}>
+                      Remove
+                    </Button>
+                  </Box>
                 </ListItem>
               ))}
             </List>

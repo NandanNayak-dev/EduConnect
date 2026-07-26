@@ -102,6 +102,25 @@ export const getClassStudents = async (req, res) => {
     }
 };
 
+export const removeStudentFromClass = async (req, res) => {
+    try {
+        if (req.user.role !== 'teacher') return res.status(403).json({ status: false, message: "Only teachers can remove students" });
+        const { classId, studentId } = req.params;
+        const targetClass = await ClassModel.findById(classId);
+        if (!targetClass) return res.status(404).json({ status: false, message: "Class not found" });
+        if (targetClass.teacherId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ status: false, message: "Not authorized to modify this class" });
+        }
+        
+        targetClass.students = targetClass.students.filter(id => id.toString() !== studentId);
+        await targetClass.save();
+
+        res.status(200).json({ status: true, message: "Student removed successfully" });
+    } catch (error) {
+        res.status(500).json({ status: false, message: "Internal Server Error" });
+    }
+};
+
 // --- Materials ---
 export const addMaterial = async (req, res) => {
     try {
