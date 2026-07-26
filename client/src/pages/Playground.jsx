@@ -32,6 +32,7 @@ const Playground = () => {
   const theme = useTheme();
   const [language, setLanguage] = useState('python');
   const [code, setCode] = useState(CODE_SNIPPETS['python']);
+  const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -41,6 +42,7 @@ const Playground = () => {
     setLanguage(newLang);
     setCode(CODE_SNIPPETS[newLang]);
     setOutput('');
+    setInput('');
   };
 
   const handleRunCode = async () => {
@@ -51,7 +53,8 @@ const Playground = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_ENDPOINT}/lms/execute`, {
         language: language,
-        code: code
+        code: code,
+        input: input
       }, { headers: { Authorization: `Bearer ${Cookies.get(import.meta.env.VITE_TOKEN_KEY)}` } });
 
       if (response.data.stderr) {
@@ -142,29 +145,55 @@ const Playground = () => {
           </Box>
         </Paper>
 
-        <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TerminalIcon fontSize="small" color="action" />
-            <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-              Terminal Output
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              flexGrow: 1,
-              backgroundColor: '#0d1117',
-              color: isError ? '#ff7b72' : '#56d364',
-              p: 3,
-              fontFamily: '"Fira Code", monospace',
-              fontSize: '14px',
-              lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
-              overflowY: 'auto',
-            }}
-          >
-            {output ? output : <Typography sx={{ color: '#8b949e', fontStyle: 'italic', fontSize: '14px', fontFamily: 'inherit' }}>Waiting for code execution...</Typography>}
-          </Box>
-        </Paper>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                Custom Input
+              </Typography>
+            </Box>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter your input here..."
+              style={{
+                flexGrow: 1,
+                padding: '16px',
+                border: 'none',
+                resize: 'none',
+                outline: 'none',
+                backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#fff',
+                color: theme.palette.text.primary,
+                fontFamily: '"Fira Code", monospace',
+                fontSize: '14px'
+              }}
+            />
+          </Paper>
+
+          <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TerminalIcon fontSize="small" color="action" />
+              <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                Terminal Output
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                flexGrow: 1,
+                backgroundColor: '#0d1117',
+                color: isError ? '#ff7b72' : '#56d364',
+                p: 3,
+                fontFamily: '"Fira Code", monospace',
+                fontSize: '14px',
+                lineHeight: 1.6,
+                whiteSpace: 'pre-wrap',
+                overflowY: 'auto',
+              }}
+            >
+              {output ? output : <Typography sx={{ color: '#8b949e', fontStyle: 'italic', fontSize: '14px', fontFamily: 'inherit' }}>Waiting for code execution...</Typography>}
+            </Box>
+          </Paper>
+        </Box>
       </Box>
     </Box>
   );

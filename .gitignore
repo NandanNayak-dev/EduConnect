@@ -25,3 +25,4 @@ dist-ssr
 
 # Server uploads
 server/uploads/
+server/temp_code/

@@ -494,7 +494,7 @@ export const getMessages = async (req, res) => {
 
 export const executeCode = async (req, res) => {
     try {
-        const { language, code } = req.body;
+        const { language, code, input } = req.body;
         const { exec } = await import('child_process');
         const fs = await import('fs');
         const path = await import('path');
@@ -506,6 +506,12 @@ export const executeCode = async (req, res) => {
 
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir);
+        }
+
+        let inputFilePath = '';
+        if (input) {
+            inputFilePath = path.join(tempDir, `${fileId}_input.txt`);
+            fs.writeFileSync(inputFilePath, input);
         }
 
         if (language === 'python') {
@@ -520,6 +526,10 @@ export const executeCode = async (req, res) => {
             fs.mkdirSync(folder);
             fileName = path.join(fileId, `Main.java`);
             executeCommand = `javac "${path.join(tempDir, fileName)}" && java -cp "${folder}" Main`;
+        }
+        
+        if (input) {
+            executeCommand += ` < "${inputFilePath}"`;
         }
 
         const filePath = path.join(tempDir, fileName);
@@ -538,6 +548,9 @@ export const executeCode = async (req, res) => {
                             fs.unlinkSync(path.join(tempDir, outName));
                         }
                     }
+                }
+                if (input && fs.existsSync(inputFilePath)) {
+                    fs.unlinkSync(inputFilePath);
                 }
             } catch(e) {}
 
