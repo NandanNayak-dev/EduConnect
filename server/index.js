@@ -19,6 +19,7 @@ app.use(
         origin: [
             "http://localhost:5173",
             "https://thinkify.vercel.app",
+            process.env.CLIENT_URL,
         ],
         credentials: true,
     })
