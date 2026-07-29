@@ -1,5 +1,7 @@
 # EduConnect
 
+### 🌐 Live Demo: [https://edu-connect-euz2.vercel.app](https://edu-connect-euz2.vercel.app)
+
 EduConnect is a comprehensive virtual classroom and learning management system (LMS) clone designed to facilitate seamless online education. It provides an interactive environment for teachers and students to manage coursework, collaborate, and practice coding.
 
 ## 🚀 Key Features
