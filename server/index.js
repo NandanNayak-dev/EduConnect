@@ -16,11 +16,9 @@ const DATABASE_NAME = process.env.DATABASE_NAME;
 
 app.use(
     cors({
-        origin: [
-            "http://localhost:5173",
-            "https://thinkify.vercel.app",
-            process.env.CLIENT_URL,
-        ],
+        origin: function (origin, callback) {
+            callback(null, true);
+        },
         credentials: true,
     })
 );
