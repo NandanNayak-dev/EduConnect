@@ -6,6 +6,7 @@ import useEduConnect from '../hooks/useEduConnect';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function NavBar({ toggleDrawer }) {
     const cookie = Cookies.get(import.meta.env.VITE_COOKIE_KEY)
@@ -47,10 +48,17 @@ export default function NavBar({ toggleDrawer }) {
                                 </Box>
                             </Link>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <IconButton onClick={toggleMode} color="inherit" sx={{ mr: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+                                <IconButton onClick={toggleMode} color="inherit">
                                     {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
                                 </IconButton>
+                                {
+                                    cookie && (
+                                        <IconButton component={Link} to="/profile" color="primary">
+                                            <AccountCircleIcon fontSize="large" />
+                                        </IconButton>
+                                    )
+                                }
                                 {
                                     !cookie && (
                                         <ButtonGroup variant="contained">
