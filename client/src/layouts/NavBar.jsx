@@ -9,7 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function NavBar({ toggleDrawer }) {
-    const cookie = Cookies.get(import.meta.env.VITE_COOKIE_KEY)
+    const cookie = Cookies.get(import.meta.env.VITE_TOKEN_KEY)
     const { mode, toggleMode } = useEduConnect();
     const theme = useTheme();
 
@@ -40,7 +40,8 @@ export default function NavBar({ toggleDrawer }) {
                                             fontFamily: '"Google Sans", Roboto, Arial, sans-serif',
                                             fontSize: '1.375rem',
                                             color: 'text.primary',
-                                            letterSpacing: '0'
+                                            letterSpacing: '0',
+                                            display: { xs: 'none', sm: 'block' }
                                         }}
                                         variant="h5"
                                         component="h1"
