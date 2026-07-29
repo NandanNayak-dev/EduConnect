@@ -203,124 +203,50 @@ const TaskManager = () => {
       </Typography>
       
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-        {/* Kanban Headers */}
-        <Grid container spacing={3} sx={{ mb: 2 }}>
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                borderRadius: 2,
-                p: 2,
-                backgroundColor: alpha(theme.palette.info.main, 0.1),
-                border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
+        {/* Kanban Board (Horizontally Scrollable on Mobile) */}
+        <Box sx={{ flex: 1, display: 'flex', gap: 3, overflowX: 'auto', minHeight: 0, pb: 1, '&::-webkit-scrollbar': { height: '8px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '4px' } }}>
+          {/* TODO Column */}
+          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.info.main, 0.1), border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TaskStatus status="todo" onDrop={handleDrop} />
             </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                borderRadius: 2,
-                p: 2,
-                backgroundColor: alpha(theme.palette.warning.main, 0.1),
-                border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TaskStatus status="ongoing" onDrop={handleDrop} />
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                borderRadius: 2,
-                p: 2,
-                backgroundColor: alpha(theme.palette.success.main, 0.1),
-                border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TaskStatus status="completed" onDrop={handleDrop} />
-            </Box>
-          </Grid>
-        </Grid>
-
-        {/* Kanban Columns */}
-        <Grid container spacing={3} sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          <Grid item xs={12} md={4} sx={{ height: '100%' }}>
-            <DroppableColumn status="todo" onDrop={handleDrop} sx={{ 
-              height: '100%', 
-              overflowY: 'auto', 
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)',
-              borderRadius: 3,
-              p: 2,
-              '&::-webkit-scrollbar': { display: 'none' },
-              transition: 'background-color 0.2s ease'
-            }}>
+            <DroppableColumn status="todo" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
               <List sx={{ pt: 0 }}>
                 {todo.map((item) => (
-                  <Task
-                    key={item._id}
-                    text={item.title}
-                    taskId={item._id}
-                    handleDelete={handleDelete}
-                  />
+                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
                 ))}
               </List>
             </DroppableColumn>
-          </Grid>
-          <Grid item xs={12} md={4} sx={{ height: '100%' }}>
-            <DroppableColumn status="ongoing" onDrop={handleDrop} sx={{ 
-              height: '100%', 
-              overflowY: 'auto', 
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)',
-              borderRadius: 3,
-              p: 2,
-              '&::-webkit-scrollbar': { display: 'none' },
-              transition: 'background-color 0.2s ease'
-            }}>
+          </Box>
+
+          {/* ONGOING Column */}
+          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.warning.main, 0.1), border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <TaskStatus status="ongoing" onDrop={handleDrop} />
+            </Box>
+            <DroppableColumn status="ongoing" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
               <List sx={{ pt: 0 }}>
                 {ongoing.map((item) => (
-                  <Task
-                    key={item._id}
-                    text={item.title}
-                    taskId={item._id}
-                    handleDelete={handleDelete}
-                  />
+                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
                 ))}
               </List>
             </DroppableColumn>
-          </Grid>
-          <Grid item xs={12} md={4} sx={{ height: '100%' }}>
-            <DroppableColumn status="completed" onDrop={handleDrop} sx={{ 
-              height: '100%', 
-              overflowY: 'auto', 
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)',
-              borderRadius: 3,
-              p: 2,
-              '&::-webkit-scrollbar': { display: 'none' },
-              transition: 'background-color 0.2s ease'
-            }}>
+          </Box>
+
+          {/* COMPLETED Column */}
+          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.success.main, 0.1), border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <TaskStatus status="completed" onDrop={handleDrop} />
+            </Box>
+            <DroppableColumn status="completed" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
               <List sx={{ pt: 0 }}>
                 {completed.map((item) => (
-                  <Task
-                    key={item._id}
-                    text={item.title}
-                    taskId={item._id}
-                    handleDelete={handleDelete}
-                  />
+                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
                 ))}
               </List>
             </DroppableColumn>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
 
       <Fab

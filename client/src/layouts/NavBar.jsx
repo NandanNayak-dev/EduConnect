@@ -5,8 +5,9 @@ import AlertBox from '../../components/common/AlertBox';
 import useEduConnect from '../hooks/useEduConnect';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import MenuIcon from '@mui/icons-material/Menu';
 
-export default function NavBar() {
+export default function NavBar({ toggleDrawer }) {
     const cookie = Cookies.get(import.meta.env.VITE_COOKIE_KEY)
     const { mode, toggleMode } = useEduConnect();
     const theme = useTheme();
@@ -17,9 +18,21 @@ export default function NavBar() {
                 <Toolbar>
                     <Box sx={{ maxWidth: "1280px", width: "100%", marginLeft: "auto", marginRight: "auto" }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} >
-                                <Box sx={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: 'center' }}>
-                                    <img src="./images/favicon.ico" width="45" alt="EduConnect" style={{ borderRadius: '50%' }} />
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                {toggleDrawer && (
+                                    <IconButton
+                                        color="inherit"
+                                        aria-label="open drawer"
+                                        edge="start"
+                                        onClick={toggleDrawer}
+                                        sx={{ display: { md: 'none' } }}
+                                    >
+                                        <MenuIcon />
+                                    </IconButton>
+                                )}
+                                <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} >
+                                    <Box sx={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: 'center' }}>
+                                        <img src="./images/favicon.ico" width="45" alt="EduConnect" style={{ borderRadius: '50%' }} />
                                     <Typography
                                         sx={{
                                             fontWeight: 500,
@@ -33,6 +46,7 @@ export default function NavBar() {
                                     >EduConnect</Typography>
                                 </Box>
                             </Link>
+                            </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <IconButton onClick={toggleMode} color="inherit" sx={{ mr: 2 }}>
                                     {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}

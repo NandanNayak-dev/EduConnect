@@ -17,7 +17,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import NavBar from "./NavBar";
 import useEduConnect from "../hooks/useEduConnect";
 import Cookies from "js-cookie";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AlertBox from "../../components/common/AlertBox";
 import Footer from "./Footer";
 
@@ -27,6 +27,11 @@ const AdminSideBar = () => {
   const theme = useTheme();
   const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
     useEduConnect();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
   const listData = [
     {
       label: "My Profile",
@@ -66,82 +71,101 @@ const AdminSideBar = () => {
     }
   }, []);
 
+  const drawerContent = (
+    <List sx={{ p: "0" }}>
+      {listData.map(({ label, url, icon }, index) => (
+        <ListItem
+          key={label + "_" + index}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          component="div"
+        >
+          <NavLink
+            to={url}
+            style={{
+              width: "100%",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              color: location.pathname === url ? theme.palette.primary.main : "inherit",
+            }}
+            activestyle={{ color: theme.palette.primary.main }}
+            onClick={() => setMobileOpen(false)}
+          >
+            <ListItemIcon
+              sx={{
+                color: location.pathname === url ? theme.palette.primary.main : "inherit",
+              }}
+            >
+              {icon}
+            </ListItemIcon>
+            <ListItemText
+              primary={label}
+              sx={{
+                color: location.pathname === url ? theme.palette.primary.main : "inherit",
+              }}
+            />
+          </NavLink>
+        </ListItem>
+      ))}
+      <ListItem
+        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        component="div"
+      >
+        <NavLink
+          onClick={handleLogOut}
+          component="button"
+          style={{
+            width: "100%",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            color: "inherit",
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer'
+          }}
+        >
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Sign Out"} sx={{ color: 'text.primary' }} />
+        </NavLink>
+      </ListItem>
+    </List>
+  );
+
   return (
     <div>
-      <NavBar />
+      <NavBar toggleDrawer={handleDrawerToggle} />
       <Box sx={{ display: "flex", minHeight: "620px" }}>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }} // Better open performance on mobile.
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            "& .MuiDrawer-paper": { boxSizing: 'border-box', width: 240, backgroundColor: 'background.paper' },
+          }}
+        >
+          {drawerContent}
+        </Drawer>
         <Drawer
           variant="persistent"
           open
           sx={{
+            display: { xs: 'none', md: 'block' },
             width: "240px",
             "& .MuiDrawer-paper": {
               position: "static",
               backgroundColor: 'background.paper',
               borderRight: 1,
-              borderColor: 'divider'
+              borderColor: 'divider',
+              width: "240px"
             },
           }}
         >
-          <List sx={{ p: "0" }}>
-            {listData.map(({ label, url, icon }, index) => (
-              <ListItem
-                key={label + "_" + index}
-                sx={{ borderBottom: 1, borderColor: 'divider' }}
-                component="div"
-              >
-                <NavLink
-                  to={url}
-                  style={{
-                    width: "100%",
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    color: location.pathname === url ? theme.palette.primary.main : "inherit",
-                  }}
-                  activestyle={{ color: theme.palette.primary.main }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      color: location.pathname === url ? theme.palette.primary.main : "inherit",
-                    }}
-                  >
-                    {icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={label}
-                    sx={{
-                      color: location.pathname === url ? theme.palette.primary.main : "inherit",
-                    }}
-                  />
-                </NavLink>
-              </ListItem>
-            ))}
-            <ListItem
-              sx={{ borderBottom: 1, borderColor: 'divider' }}
-              component="div"
-            >
-              <NavLink
-                onClick={handleLogOut}
-                component="button"
-                style={{
-                  width: "100%",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "inherit",
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <LogoutIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Sign Out"} sx={{ color: 'text.primary' }} />
-              </NavLink>
-            </ListItem>
-          </List>
+          {drawerContent}
         </Drawer>
         <Box sx={{ width: "100%", padding: "10px 10px 5px 0px", backgroundColor: 'background.default' }}>
           <Outlet />
