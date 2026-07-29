@@ -73,7 +73,14 @@ const Playground = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, height: { xs: 'auto', md: 'calc(100vh - 64px)' }, minHeight: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', backgroundColor: theme.palette.mode === 'dark' ? '#121212' : '#f8fafc' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'stretch', sm: 'center' }, 
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 2, sm: 0 },
+        mb: 3 
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box sx={{ p: 1, borderRadius: 2, backgroundColor: 'primary.main', display: 'flex', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
             <CodeIcon />
@@ -83,13 +90,14 @@ const Playground = () => {
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
           <Select
             value={language}
             onChange={handleLanguageChange}
             size="small"
             sx={{ 
-              minWidth: 160, 
+              minWidth: { xs: '0', sm: 160 },
+              flex: { xs: 1, sm: 'none' },
               backgroundColor: 'background.paper',
               borderRadius: 2,
               '& .MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.divider },
@@ -108,6 +116,7 @@ const Playground = () => {
             disabled={isLoading}
             startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <PlayArrowIcon />}
             sx={{
+              flex: { xs: 1, sm: 'none' },
               borderRadius: 2,
               px: 3,
               py: 1,
@@ -122,7 +131,7 @@ const Playground = () => {
       </Box>
 
       <Box sx={{ display: 'flex', flexGrow: 1, gap: 3, flexDirection: { xs: 'column', md: 'row' }, minHeight: 0 }}>
-        <Paper elevation={0} sx={{ flex: 1.5, minHeight: { xs: '400px', md: 'auto' }, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+        <Paper elevation={0} sx={{ flex: { xs: 'none', md: 1.5 }, height: { xs: '450px', md: 'auto' }, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', gap: 1 }}>
             <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
             <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
@@ -137,7 +146,7 @@ const Playground = () => {
             theme={theme.palette.mode === 'dark' ? 'vs-dark' : 'light'}
             options={{
               minimap: { enabled: false },
-              fontSize: 16,
+              fontSize: 14,
               wordWrap: 'on',
               automaticLayout: true,
             }}
@@ -145,7 +154,7 @@ const Playground = () => {
           </Box>
         </Paper>
 
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, minHeight: { xs: '500px', md: 'auto' } }}>
+        <Box sx={{ flex: { xs: 'none', md: 1 }, height: { xs: '500px', md: 'auto' }, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Paper elevation={0} sx={{ flex: 1, borderRadius: 3, overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f1f5f9', display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
