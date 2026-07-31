@@ -204,9 +204,9 @@ const TaskManager = () => {
       
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         {/* Kanban Board (Horizontally Scrollable on Mobile) */}
-        <Box sx={{ flex: 1, display: 'flex', gap: 3, overflowX: 'auto', minHeight: 0, pb: 1, '&::-webkit-scrollbar': { height: '8px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '4px' } }}>
+        <Box sx={{ flex: 1, display: 'flex', gap: 3, overflowX: 'auto', overflowY: 'hidden', minHeight: 0, pb: 1, '&::-webkit-scrollbar': { height: '8px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '4px' } }}>
           {/* TODO Column */}
-          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Box sx={{ minWidth: '280px', flexShrink: 0, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.info.main, 0.1), border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TaskStatus status="todo" onDrop={handleDrop} />
             </Box>
@@ -220,7 +220,7 @@ const TaskManager = () => {
           </Box>
 
           {/* ONGOING Column */}
-          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Box sx={{ minWidth: '280px', flexShrink: 0, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.warning.main, 0.1), border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TaskStatus status="ongoing" onDrop={handleDrop} />
             </Box>
@@ -234,7 +234,7 @@ const TaskManager = () => {
           </Box>
 
           {/* COMPLETED Column */}
-          <Box sx={{ minWidth: { xs: '300px', md: '0' }, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Box sx={{ minWidth: '280px', flexShrink: 0, flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.success.main, 0.1), border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TaskStatus status="completed" onDrop={handleDrop} />
             </Box>
