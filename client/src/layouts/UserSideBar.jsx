@@ -7,6 +7,7 @@ import {
   ListItemIcon,
   useTheme,
   Badge,
+  Toolbar,
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -133,7 +134,9 @@ const UserSideBar = ({ children }) => {
   }, [location.pathname]);
 
   const drawerContent = (
-    <List sx={{ p: "0" }}>
+    <>
+      <Toolbar />
+      <List sx={{ p: "0" }}>
       {listData.map(({ label, url, icon }, index) => (
         <ListItem
           key={label + "_" + index}
@@ -228,6 +231,7 @@ const UserSideBar = ({ children }) => {
         </NavLink>
       </ListItem>
     </List>
+    </>
   );
 
   return (

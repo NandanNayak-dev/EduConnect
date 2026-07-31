@@ -5,7 +5,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  useTheme
+  useTheme,
+  Toolbar
 } from "@mui/material";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -71,7 +72,9 @@ const AdminSideBar = () => {
   }, []);
 
   const drawerContent = (
-    <List sx={{ p: "0" }}>
+    <>
+      <Toolbar />
+      <List sx={{ p: "0" }}>
       {listData.map(({ label, url, icon }, index) => (
         <ListItem
           key={label + "_" + index}
@@ -131,6 +134,7 @@ const AdminSideBar = () => {
         </NavLink>
       </ListItem>
     </List>
+    </>
   );
 
   return (
