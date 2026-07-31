@@ -123,6 +123,23 @@ let theme = createTheme({
         },
       },
     },
+    MuiCssBaseline: {
+      styleOverrides: `
+        html {
+          font-size: 16px;
+        }
+        @media (max-width: 900px) {
+          html {
+            font-size: 14px;
+          }
+        }
+        @media (max-width: 600px) {
+          html {
+            font-size: 12px;
+          }
+        }
+      `,
+    },
   },
 });
 
