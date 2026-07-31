@@ -11,7 +11,8 @@ import TaskManager from "../pages/TaskManager";
 import CalendarPage from "../pages/Calendar";
 import Playground from "../pages/Playground";
 import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { MultiBackend } from "react-dnd-multi-backend";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 
 import AdminSideBar from "../layouts/AdminSideBar";
 import AuthLayout from "../layouts/AuthLayout";
@@ -73,7 +74,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <UserSideBar>
-          <DndProvider backend={HTML5Backend}>
+          <DndProvider backend={MultiBackend} options={HTML5toTouch}>
             <TaskManager />
           </DndProvider>
         </UserSideBar>
