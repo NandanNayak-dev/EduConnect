@@ -21,7 +21,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CodeIcon from "@mui/icons-material/Code";
 
 import NavBar from "./NavBar";
-import Footer from "./Footer";
 import Cookies from "js-cookie";
 import useEduConnect from "../hooks/useEduConnect";
 import AlertBox from "../../components/common/AlertBox";
@@ -267,7 +266,6 @@ const UserSideBar = ({ children }) => {
 
         <Box sx={{ width: "100%", margin: "10px", backgroundColor: 'background.default' }}>{children}</Box>
       </Box>
-      <Footer />
       <ChatbotWidget />
     </div>
   );

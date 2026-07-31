@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 
-import Footer from "./Footer";
 import NavBar from "./NavBar";
 
 const PublicRoute = ({ children }) => {
@@ -8,7 +7,6 @@ const PublicRoute = ({ children }) => {
     <div>
       <NavBar />
       {children}
-      <Footer />
     </div>
   );
 };

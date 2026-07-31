@@ -6,7 +6,6 @@ import Banner from "../../components/home/Banner";
 import FAQ from "../../components/home/FAQ";
 import Features from "../../components/home/features/Features";
 import NavBar from "../layouts/NavBar";
-import Footer from "../layouts/Footer";
 
 const Home = () => {
   useEffect(() => {
@@ -20,7 +19,6 @@ const Home = () => {
       <Banner />
       <Features />
       <FAQ />
-      <Footer />
     </>
   );
 };

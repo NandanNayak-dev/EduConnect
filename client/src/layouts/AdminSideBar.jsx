@@ -19,7 +19,6 @@ import useEduConnect from "../hooks/useEduConnect";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import AlertBox from "../../components/common/AlertBox";
-import Footer from "./Footer";
 
 const AdminSideBar = () => {
   const navigate = useNavigate();
@@ -171,7 +170,6 @@ const AdminSideBar = () => {
           <Outlet />
         </Box>
       </Box>
-      <Footer />
     </div>
   );
 };
