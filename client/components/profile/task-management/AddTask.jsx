@@ -170,6 +170,7 @@ AddTask.propTypes = {
     PropTypes.string,
     PropTypes.number,
     PropTypes.instanceOf(Date),
+    PropTypes.object,
   ]).isRequired,
 };
 
