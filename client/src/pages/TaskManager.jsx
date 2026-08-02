@@ -1,38 +1,16 @@
-import { Grid, Box, List, Fab, Modal, Typography, useTheme, alpha } from "@mui/material";
-import TaskStatus from "../../components/profile/task-management/TaskStatus";
+import { Box, List, Fab, Modal, Typography, useTheme, alpha } from "@mui/material";
 import Task from "../../components/profile/task-management/Task";
-
 import AddIcon from "@mui/icons-material/Add";
 import AddTask from "../../components/profile/task-management/AddTask";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import useEduConnect from "../hooks/useEduConnect";
 import dayjs from "dayjs";
 import { useForm, FormProvider } from "react-hook-form";
 import Cookies from "js-cookie";
-import { useDrop } from 'react-dnd';
-
-const DroppableColumn = ({ status, onDrop, children, sx }) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: 'TASK_ITEM',
-    drop: (item) => onDrop(item.taskId, status),
-    collect: (monitor) => ({
-      isOver: monitor.isOver()
-    })
-  });
-  
-  return (
-    <Box ref={drop} sx={{ ...sx, backgroundColor: isOver ? 'rgba(0,0,0,0.1)' : sx.backgroundColor }}>
-      {children}
-    </Box>
-  );
-};
 
 const TaskManager = () => {
   const [allTask, setAllTask] = useState([]);
-  const [todo, setTodo] = useState([]);
-  const [ongoing, setOngoing] = useState([]);
-  const [completed, setCompleted] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const theme = useTheme();
   
@@ -76,18 +54,15 @@ const TaskManager = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    setTodo(allTask.filter((task) => task.taskStatus === "todo"));
-    setOngoing(allTask.filter((task) => task.taskStatus === "ongoing"));
-    setCompleted(allTask.filter((task) => task.taskStatus === "completed"));
-  }, [allTask]);
+  const activeTasks = useMemo(() => allTask.filter(task => task.taskStatus !== "completed"), [allTask]);
+  const completedTasks = useMemo(() => allTask.filter(task => task.taskStatus === "completed"), [allTask]);
 
   const onSubmit = async (data) => {
     try {
       setLoadingStatus(true);
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_ENDPOINT}/tasks`,
-        { ...data, selectedDate },
+        { ...data, selectedDate, taskStatus: "todo" },
         {
           headers: {
             Authorization: `Bearer ${Cookies.get(
@@ -124,11 +99,12 @@ const TaskManager = () => {
     }
   };
 
-  const handleDrop = async (taskId, status) => {
+  const handleToggle = async (taskId, isCompleted) => {
+    const newStatus = isCompleted ? "todo" : "completed";
     try {
       setLoadingStatus(true);
       const response = await axios.patch(
-        `${import.meta.env.VITE_SERVER_ENDPOINT}/tasks/${taskId}/${status}`,
+        `${import.meta.env.VITE_SERVER_ENDPOINT}/tasks/${taskId}/${newStatus}`,
         {},
         {
           headers: {
@@ -138,23 +114,26 @@ const TaskManager = () => {
           },
         }
       );
-      const updatedTasks = allTask.map((task) =>
-        task._id === taskId ? { ...task, taskStatus: status } : task
-      );
-      setAllTask(updatedTasks);
-      setLoadingStatus(false);
-      setAlertBoxOpenStatus(true);
-      setAlertSeverity(response.data.status ? "success" : "error");
-      setAlertMessage(response.data.message);
+      
+      if (response.data.status) {
+        setAllTask((prev) => 
+          prev.map((task) =>
+            task._id === taskId ? { ...task, taskStatus: newStatus } : task
+          )
+        );
+        setAlertBoxOpenStatus(true);
+        setAlertSeverity("success");
+        setAlertMessage(response.data.message);
+      } else {
+        setAlertBoxOpenStatus(true);
+        setAlertSeverity("error");
+        setAlertMessage(response.data.message);
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoadingStatus(false);
+      console.error("Error updating task:", error);
       setAlertBoxOpenStatus(true);
       setAlertSeverity("error");
-      setAlertMessage("Something Went Wrong");
-      error.response?.data?.message
-        ? setAlertMessage(error.response.data.message)
-        : setAlertMessage(error.message);
+      setAlertMessage(error.response?.data?.message || error.message);
     } finally {
       setLoadingStatus(false);
     }
@@ -179,74 +158,71 @@ const TaskManager = () => {
         setAlertSeverity("success");
         setAlertMessage(response.data.message);
       } else {
-        setLoadingStatus(false);
         setAlertBoxOpenStatus(true);
         setAlertSeverity("error");
         setAlertMessage(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      setLoadingStatus(false);
       setAlertBoxOpenStatus(true);
       setAlertSeverity("error");
-      setAlertMessage("Something Went Wrong");
-      error.response?.data?.message
-        ? setAlertMessage(error.response.data.message)
-        : setAlertMessage(error.message);
+      setAlertMessage(error.response?.data?.message || "Something Went Wrong");
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
   return (
-    <Box sx={{ width: "100%", position: "relative", pb: 4, height: { xs: 'auto', md: "calc(100vh - 100px)" }, minHeight: "calc(100vh - 100px)", overflow: { xs: 'visible', md: "hidden" }, display: "flex", flexDirection: "column" }}>
-      <Typography variant="h4" fontWeight={600} mb={3} color="text.primary">
-        Task Manager
-      </Typography>
+    <Box sx={{ width: "100%", position: "relative", pb: 4, height: { xs: 'auto', md: "calc(100vh - 100px)" }, minHeight: "calc(100vh - 100px)", display: "flex", flexDirection: "column", alignItems: "center" }}>
+
       
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-        {/* Kanban Board (Stacked on Mobile, Horizontal on Desktop) */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, overflowX: { xs: 'visible', md: 'auto' }, overflowY: { xs: 'visible', md: 'hidden' }, minHeight: 0, pb: 1, '&::-webkit-scrollbar': { height: '8px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '4px' } }}>
-          {/* TODO Column */}
-          <Box sx={{ width: '100%', flexShrink: 0, flex: { xs: 'none', md: 1 }, display: 'flex', flexDirection: 'column', height: { xs: '450px', md: '100%' } }}>
-            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.info.main, 0.1), border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TaskStatus status="todo" onDrop={handleDrop} />
-            </Box>
-            <DroppableColumn status="todo" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
-              <List sx={{ pt: 0 }}>
-                {todo.map((item) => (
-                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
-                ))}
-              </List>
-            </DroppableColumn>
-          </Box>
-
-          {/* ONGOING Column */}
-          <Box sx={{ width: '100%', flexShrink: 0, flex: { xs: 'none', md: 1 }, display: 'flex', flexDirection: 'column', height: { xs: '450px', md: '100%' } }}>
-            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.warning.main, 0.1), border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TaskStatus status="ongoing" onDrop={handleDrop} />
-            </Box>
-            <DroppableColumn status="ongoing" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
-              <List sx={{ pt: 0 }}>
-                {ongoing.map((item) => (
-                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
-                ))}
-              </List>
-            </DroppableColumn>
-          </Box>
-
-          {/* COMPLETED Column */}
-          <Box sx={{ width: '100%', flexShrink: 0, flex: { xs: 'none', md: 1 }, display: 'flex', flexDirection: 'column', height: { xs: '450px', md: '100%' } }}>
-            <Box sx={{ borderRadius: 2, p: 2, mb: 2, backgroundColor: alpha(theme.palette.success.main, 0.1), border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TaskStatus status="completed" onDrop={handleDrop} />
-            </Box>
-            <DroppableColumn status="completed" onDrop={handleDrop} sx={{ flex: 1, overflowY: 'auto', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, '&::-webkit-scrollbar': { display: 'none' }, transition: 'background-color 0.2s ease' }}>
-              <List sx={{ pt: 0 }}>
-                {completed.map((item) => (
-                  <Task key={item._id} text={item.title} taskId={item._id} handleDelete={handleDelete} />
-                ))}
-              </List>
-            </DroppableColumn>
-          </Box>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", width: "100%", maxWidth: "800px", gap: 3 }}>
+        
+        {/* Active Tasks Section */}
+        <Box sx={{ width: '100%', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6" fontWeight={600} mb={2} color="text.primary">
+            Active Tasks
+          </Typography>
+          <List sx={{ pt: 0, maxHeight: '400px', overflowY: 'auto' }}>
+            {activeTasks.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ my: 2 }}>
+                No active tasks.
+              </Typography>
+            ) : (
+              activeTasks.map((item) => (
+                <Task 
+                  key={item._id} 
+                  text={item.title} 
+                  taskId={item._id} 
+                  isCompleted={false}
+                  handleToggle={handleToggle}
+                  handleDelete={handleDelete} 
+                />
+              ))
+            )}
+          </List>
         </Box>
+
+        {/* Completed Tasks Section */}
+        {completedTasks.length > 0 && (
+          <Box sx={{ width: '100%', backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)', borderRadius: 3, p: 2, display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" fontWeight={600} mb={2} color="text.primary">
+              Completed Tasks
+            </Typography>
+            <List sx={{ pt: 0, maxHeight: '300px', overflowY: 'auto' }}>
+              {completedTasks.map((item) => (
+                <Task 
+                  key={item._id} 
+                  text={item.title} 
+                  taskId={item._id} 
+                  isCompleted={true}
+                  handleToggle={handleToggle}
+                  handleDelete={handleDelete} 
+                />
+              ))}
+            </List>
+          </Box>
+        )}
       </Box>
 
       <Fab
@@ -254,7 +230,7 @@ const TaskManager = () => {
         size="large"
         sx={{
           position: "absolute",
-          bottom: 24,
+          bottom: 80,
           right: 24,
           boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.4)}`,
           backgroundColor: "primary.main",
