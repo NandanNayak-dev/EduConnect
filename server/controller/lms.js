@@ -496,38 +496,34 @@ export const executeCode = async (req, res) => {
     try {
         const { language, code, input } = req.body;
         
-        const response = await fetch('https://emkc.org/api/v2/piston/execute', {
+        let languageId = 71; // default Python
+        if (language === 'c') languageId = 50;
+        else if (language === 'java') languageId = 62;
+        else if (language === 'python') languageId = 71;
+
+        const response = await fetch('https://ce.judge0.com/submissions?base64_encoded=false&wait=true', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                language: language,
-                version: '*',
-                files: [
-                    {
-                        content: code
-                    }
-                ],
+                source_code: code,
+                language_id: languageId,
                 stdin: input || ''
             })
         });
 
         const data = await response.json();
 
-        if (data.message) {
-             return res.status(200).json({ stdout: '', stderr: data.message });
+        if (data.compile_output) {
+            return res.status(200).json({ stdout: '', stderr: data.compile_output });
         }
 
-        if (data.compile && data.compile.code !== 0) {
-            return res.status(200).json({ stdout: '', stderr: data.compile.output });
+        if (data.stderr) {
+            return res.status(200).json({ stdout: data.stdout || '', stderr: data.stderr });
         }
 
-        if (data.run && data.run.code !== 0) {
-            return res.status(200).json({ stdout: data.run.stdout || '', stderr: data.run.stderr || data.run.output });
-        }
-
-        return res.status(200).json({ stdout: data.run.stdout, stderr: data.run.stderr });
+        return res.status(200).json({ stdout: data.stdout || '', stderr: '' });
 
     } catch (error) {
         console.error('Code execution error:', error);
