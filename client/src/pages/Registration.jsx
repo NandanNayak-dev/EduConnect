@@ -33,7 +33,7 @@ const schema = yup.object().shape({
 const Registration = () => {
   // alert message
   const navigate = useNavigate();
-  const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
+  const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity, setLoadingStatus } =
     useEduConnect();
   // form validation
   const {
@@ -54,6 +54,7 @@ const Registration = () => {
   });
   // form submit
   const onSubmit = async (data) => {
+    setLoadingStatus(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_ENDPOINT}/users/registration`,
@@ -88,9 +89,11 @@ const Registration = () => {
       setAlertSeverity("error");
       setAlertMessage("Something Went Wrong");
       // server error message with status code
-      error.response.data.message
+      error.response?.data?.message
         ? setAlertMessage(error.response.data.message)
         : setAlertMessage(error.message);
+    } finally {
+      setLoadingStatus(false);
     }
   };
   // check if user is already logged in
