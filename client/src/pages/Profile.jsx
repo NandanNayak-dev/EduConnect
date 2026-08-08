@@ -1,15 +1,7 @@
 import {
   Box,
-  Grid,
   Typography,
-  Card,
-  CardContent,
-  useTheme,
-  alpha
 } from "@mui/material";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import ClassIcon from "@mui/icons-material/Class";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -18,48 +10,8 @@ import ProfileCardDetails from "../../components/profile/profile/ProfileCardDeta
 import ActivityGrid from "../../components/profile/profile/ActivityGrid";
 import useEduConnect from "../hooks/useEduConnect";
 
-const StatCard = ({ title, value, icon, color }) => {
-  const theme = useTheme();
-  return (
-    <Card 
-      elevation={0} 
-      sx={{ 
-        flex: 1, 
-        borderRadius: 2,
-        transition: 'none',
-        '&:hover': {
-          boxShadow: 'none'
-        }
-      }}
-    >
-      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={600} textTransform="uppercase" letterSpacing={1}>
-            {title}
-          </Typography>
-          <Box 
-            sx={{ 
-              p: 1, 
-              borderRadius: 2, 
-              backgroundColor: 'transparent', 
-              display: 'flex', 
-              color: color 
-            }}
-          >
-            {icon}
-          </Box>
-        </Box>
-        <Typography variant="h3" fontWeight={700} color="text.primary">
-          {value !== undefined ? value : '-'}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
-};
-
 const Profile = () => {
   const [data, setData] = useState(null);
-  const theme = useTheme();
   const {
     setAlertBoxOpenStatus,
     setLoadingStatus,
@@ -111,47 +63,7 @@ const Profile = () => {
         Dashboard Overview
       </Typography>
       
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} md={7} lg={8}>
-          <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }} height="100%">
-            {data?.role === 'teacher' ? (
-              <>
-                <StatCard 
-                  title="Classes Created" 
-                  value={data?.totalClassesCreated} 
-                  icon={<ClassIcon />} 
-                  color={theme.palette.primary.main} 
-                />
-                <StatCard 
-                  title="Assignments Posted" 
-                  value={data?.totalAssignmentsPosted} 
-                  icon={<AssignmentIcon />} 
-                  color={theme.palette.secondary.main} 
-                />
-              </>
-            ) : (
-              <>
-                <StatCard 
-                  title="Classes Joined" 
-                  value={data?.totalClassesJoined} 
-                  icon={<ClassIcon />} 
-                  color={theme.palette.primary.main} 
-                />
-                <StatCard 
-                  title="Assignments Submitted" 
-                  value={data?.totalSubmissions} 
-                  icon={<AssignmentTurnedInIcon />} 
-                  color={theme.palette.success.main} 
-                />
-              </>
-            )}
-          </Box>
-        </Grid>
-        
-        <Grid item xs={12} md={5} lg={4}>
-          <ProfileCardDetails data={data} />
-        </Grid>
-      </Grid>
+      <ProfileCardDetails data={data} />
 
       <Typography variant="h5" fontWeight={700} mb={2} mt={4} color="text.primary">
         Activity Grid
