@@ -495,72 +495,42 @@ export const getMessages = async (req, res) => {
 export const executeCode = async (req, res) => {
     try {
         const { language, code, input } = req.body;
-        const { exec } = await import('child_process');
-        const fs = await import('fs');
-        const path = await import('path');
-
-        const fileId = Date.now().toString() + Math.floor(Math.random() * 1000).toString();
-        let fileName = '';
-        let executeCommand = '';
-        const tempDir = path.join(process.cwd(), 'temp_code');
-
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir);
-        }
-
-        let inputFilePath = '';
-        if (input) {
-            inputFilePath = path.join(tempDir, `${fileId}_input.txt`);
-            fs.writeFileSync(inputFilePath, input);
-        }
-
-        if (language === 'python') {
-            fileName = `${fileId}.py`;
-            executeCommand = `python "${path.join(tempDir, fileName)}"`;
-        } else if (language === 'c') {
-            fileName = `${fileId}.c`;
-            const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
-            executeCommand = `gcc "${path.join(tempDir, fileName)}" -o "${path.join(tempDir, outName)}" && "${path.join(tempDir, outName)}"`;
-        } else if (language === 'java') {
-            const folder = path.join(tempDir, fileId);
-            fs.mkdirSync(folder);
-            fileName = path.join(fileId, `Main.java`);
-            executeCommand = `javac "${path.join(tempDir, fileName)}" && java -cp "${folder}" Main`;
-        }
         
-        if (input) {
-            executeCommand += ` < "${inputFilePath}"`;
+        const response = await fetch('https://emkc.org/api/v2/piston/execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                language: language,
+                version: '*',
+                files: [
+                    {
+                        content: code
+                    }
+                ],
+                stdin: input || ''
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.message) {
+             return res.status(200).json({ stdout: '', stderr: data.message });
         }
 
-        const filePath = path.join(tempDir, fileName);
-        fs.writeFileSync(filePath, code);
+        if (data.compile && data.compile.code !== 0) {
+            return res.status(200).json({ stdout: '', stderr: data.compile.output });
+        }
 
-        exec(executeCommand, { timeout: 10000 }, (error, stdout, stderr) => {
-            // Clean up files (best effort)
-            try {
-                if (language === 'java') {
-                    fs.rmSync(path.join(tempDir, fileId), { recursive: true, force: true });
-                } else {
-                    fs.unlinkSync(filePath);
-                    if (language === 'c') {
-                        const outName = process.platform === 'win32' ? `${fileId}.exe` : `${fileId}.out`;
-                        if (fs.existsSync(path.join(tempDir, outName))) {
-                            fs.unlinkSync(path.join(tempDir, outName));
-                        }
-                    }
-                }
-                if (input && fs.existsSync(inputFilePath)) {
-                    fs.unlinkSync(inputFilePath);
-                }
-            } catch(e) {}
+        if (data.run && data.run.code !== 0) {
+            return res.status(200).json({ stdout: data.run.stdout || '', stderr: data.run.stderr || data.run.output });
+        }
 
-            if (error) {
-                return res.status(200).json({ stdout: '', stderr: stderr || error.message });
-            }
-            return res.status(200).json({ stdout, stderr });
-        });
+        return res.status(200).json({ stdout: data.run.stdout, stderr: data.run.stderr });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Failed to execute code locally" });
+        console.error('Code execution error:', error);
+        res.status(500).json({ message: "Failed to execute code" });
     }
 };
