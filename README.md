@@ -18,6 +18,7 @@ EduConnect is a comprehensive virtual classroom and learning management system (
 ## 🛠️ Technology Stack
 
 ### Frontend (Client)
+
 *   **Framework**: React 18 with Vite
 *   **Styling & UI**: Material UI (MUI), Framer Motion, AOS (Animations)
 *   **Code Editor**: `@monaco-editor/react`
