@@ -52,12 +52,12 @@ const Login = () => {
         data
       );
       if (response.data.status) {
-        Cookies.set(import.meta.env.VITE_TOKEN_KEY, response.data.token, {
-          expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
+        Cookies.set(import.meta.env.VITE_TOKEN_KEY || "thinkify", response.data.token, {
+          expires: Number(import.meta.env.VITE_COOKIE_EXPIRES) || 1,
           path: "/",
         });
-        Cookies.set(import.meta.env.VITE_USER_ROLE, response.data.user.role, {
-          expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
+        Cookies.set(import.meta.env.VITE_USER_ROLE || "role", response.data.user.role, {
+          expires: Number(import.meta.env.VITE_COOKIE_EXPIRES) || 1,
           path: "/",
         });
         if (response.data.user.role === "student" || response.data.user.role === "teacher") {
