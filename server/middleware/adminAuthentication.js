@@ -11,7 +11,7 @@ const adminAuthentication = async (req, res, next) => {
             const authorizationToken = authorization.split(" ")[1];
             if (authorizationToken) {
 
-                const { userId } = jwt.verify(authorizationToken, process.env.JWT_SECRET_KEY)
+                const { userId } = jwt.verify(authorizationToken, process.env.JWT_SECRET_KEY || 'default_secret')
                 if (Types.ObjectId.isValid(userId)) {
 
                     const user = await UserModel.findById(userId).select("-password");

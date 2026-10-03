@@ -9,7 +9,7 @@ const userAuthentication = async (req, res, next) => {
         if (authorization && authorization.startsWith("Bearer ")) {
             const authorizationToken = authorization.split(" ")[1];
             if (authorizationToken && authorizationToken !== "null" && authorizationToken !== "undefined") {
-                const { userId } = jwt.verify(authorizationToken, process.env.JWT_SECRET_KEY)
+                const { userId } = jwt.verify(authorizationToken, process.env.JWT_SECRET_KEY || 'default_secret')
                 if (Types.ObjectId.isValid(userId)) {
 
                     const user = await UserModel.findById(userId).select("-password");
